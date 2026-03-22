@@ -1,0 +1,78 @@
+{
+  "product_name": "VIBEVps",
+  "current_version": "1.3.0",
+  "versions": [
+    {
+      "version": "1.3.0",
+      "release_date": "2026-03-22",
+      "download_url": "/api/updates/download/VIBEVps/1.3.0/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Responsive Design: layout completamente responsive per mobile e tablet. Sidebar con hamburger menu su mobile, tabelle VM convertite in card list, modal bottom-sheet su mobile, griglie e padding adattivi su tutti i breakpoint",
+      "file_size": 195365
+    },
+    {
+      "version": "1.2.5",
+      "release_date": "2026-03-22",
+      "download_url": "/api/updates/download/VIBEVps/1.2.5/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix SSH terminale: inizializzazione xterm.js tramite callback ref con buffer dati e delay per layout DOM",
+      "file_size": 193695
+    },
+    {
+      "version": "1.2.4",
+      "release_date": "2026-03-21",
+      "download_url": "/api/updates/download/VIBEVps/1.2.4/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Auto-installazione qemu-guest-agent via cloud-init vendor-data su ogni nuova VM creata, rilevamento automatico storage snippets",
+      "file_size": 193718
+    },
+    {
+      "version": "1.2.3",
+      "release_date": "2026-03-21",
+      "download_url": "/api/updates/download/VIBEVps/1.2.3/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix SSH: risolto terminale vuoto dopo connessione (race condition rendering xterm.js), rimosso campo Host manuale",
+      "file_size": 193229
+    },
+    {
+      "version": "1.2.2",
+      "release_date": "2026-03-20",
+      "download_url": "/api/updates/download/VIBEVps/1.2.2/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix SSH: recupero IP con fallback multipli (guest agent, VM detail, cloud-init ipconfig0), messaggi di errore dettagliati",
+      "file_size": 193115
+    },
+    {
+      "version": "1.2.1",
+      "release_date": "2026-03-20",
+      "download_url": "/api/updates/download/VIBEVps/1.2.1/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix: recupero IP della VM via QEMU Guest Agent per connessione SSH",
+      "file_size": 192932
+    },
+    {
+      "version": "1.2.0",
+      "release_date": "2026-03-20",
+      "download_url": "/api/updates/download/VIBEVps/1.2.0/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Console SSH Web: terminale SSH integrato nella pagina VM con xterm.js, proxy WebSocket, recupero IP via QEMU Guest Agent",
+      "file_size": 192933
+    },
+    {
+      "version": "1.1.0",
+      "release_date": "2026-03-19",
+      "download_url": "/api/updates/download/VIBEVps/1.1.0/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Hypervisor filter on Dashboard VM List and Templates, fix update extraction",
+      "file_size": 187375
+    },
+    {
+      "version": "1.0.0",
+      "release_date": "2026-03-16",
+      "download_url": "/api/updates/download/VIBEVps/1.0.0/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Initial release: Dashboard VM, Hypervisor management, VM creation from templates, Cloud-init configuration, MAC address uniqueness, Machine-id regeneration, WebSocket real-time updates, Online update system",
+      "file_size": 187495
+    }
+  ]
+}
