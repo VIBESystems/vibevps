@@ -74,7 +74,7 @@ All prefixed with `/api`:
 
 ## Update System
 
-VIBEVps uses VIBEVault (`https://vibevault.vibesystems.dev`) for distributing updates **without requiring a license** (endpoint `POST /api/updates/check-free`).
+VIBEVps uses an external update server for distributing updates **without requiring a license**.
 
 ### Versioning Rules (Semantic Versioning)
 
@@ -92,7 +92,7 @@ VIBEVps uses **Semantic Versioning**: `MAJOR.MINOR.PATCH`
 
 ### Regola fondamentale (OBBLIGATORIA)
 
-**Ogni modifica, patch, fix o feature DEVE sempre e solo produrre un pacchetto update** seguendo la procedura sotto. **NON caricare MAI il pacchetto su VIBEVault** — il deploy è sempre responsabilità dell'utente. Non inviare file via SSH/SCP al server VIBEVault né a nessun server di produzione.
+**Ogni modifica, patch, fix o feature DEVE sempre e solo produrre un pacchetto update** seguendo la procedura sotto. **NON caricare MAI il pacchetto sul server di update** — il deploy è sempre responsabilità dell'utente. Non inviare file via SSH/SCP a nessun server di produzione.
 
 ### Creating a new update package
 
@@ -103,13 +103,13 @@ When a new version is ready:
 3. This generates:
    - `installer/updates/{VERSION}/vibevps.zip` — the update package
    - `installer/updates/manifest.json` — updated manifest with all versions
-4. **STOP** — the user will manually upload the zip + manifest to VIBEVault
+4. **STOP** — the user will manually upload the zip + manifest to the update server
 5. Also update the installer (`installer/vibevps-installer-v{VERSION}/`) with the latest sources and rebuild its zip
 
 ### Output structure
 ```
 installer/updates/
-├── manifest.json          # Manifest with all versions (upload to VIBEVault)
+├── manifest.json          # Manifest with all versions (upload to update server)
 ├── 1.0.0/
 │   └── vibevps.zip
 ├── 1.1.0/
@@ -121,8 +121,6 @@ installer/updates/
 - `installer/build-update.sh` — generates update zip + updates manifest
 - `backend/src/updates/license.service.ts` — calls `check-free` endpoint (no license needed)
 - `backend/src/updates/updates.routes.ts` — handles install with per-version `downloadTokens`
-- VIBEVault: `backend/src/controllers/updateController.js` → `checkFree()` method
-- VIBEVault: `backend/src/routes/api.js` → `POST /api/updates/check-free`
 
 ## Workflow Documentazione (OBBLIGATORIO)
 
