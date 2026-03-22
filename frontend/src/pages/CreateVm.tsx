@@ -10,10 +10,10 @@ import {
 
 const steps = [
   { icon: FileBox, label: 'Template' },
-  { icon: Server, label: 'Identita' },
-  { icon: Globe, label: 'Rete' },
-  { icon: Cpu, label: 'Risorse' },
-  { icon: Rocket, label: 'Riepilogo' },
+  { icon: Server, label: 'Identity' },
+  { icon: Globe, label: 'Network' },
+  { icon: Cpu, label: 'Resources' },
+  { icon: Rocket, label: 'Summary' },
 ];
 
 export function CreateVm() {
@@ -122,8 +122,8 @@ export function CreateVm() {
   return (
     <div className="space-y-4 lg:space-y-6 max-w-3xl mx-auto">
       <div>
-        <h2 className="text-2xl font-bold text-surface-100">Crea Virtual Machine</h2>
-        <p className="text-sm text-surface-500">Crea una nuova VM da template</p>
+        <h2 className="text-2xl font-bold text-surface-100">Create Virtual Machine</h2>
+        <p className="text-sm text-surface-500">Create a new VM from template</p>
       </div>
 
       {/* Steps */}
@@ -164,7 +164,7 @@ export function CreateVm() {
                   value={form.hypervisor_id}
                   onChange={(e) => update('hypervisor_id', Number(e.target.value))}
                 >
-                  <option value={0}>Seleziona hypervisor...</option>
+                  <option value={0}>Select hypervisor...</option>
                   {hypervisors.map((hv) => (
                     <option key={hv.id} value={hv.id}>{hv.name} ({hv.host})</option>
                   ))}
@@ -175,7 +175,7 @@ export function CreateVm() {
                 <div>
                   <label className="block text-sm font-medium text-surface-300 mb-2">Template</label>
                   {allTemplates.length === 0 ? (
-                    <p className="text-sm text-surface-500">Nessun template trovato per questo hypervisor.</p>
+                    <p className="text-sm text-surface-500">No templates found for this hypervisor.</p>
                   ) : (
                     <div className="grid gap-3">
                       {allTemplates.map((t) => (
@@ -194,7 +194,7 @@ export function CreateVm() {
                               <p className="text-xs text-surface-500">
                                 ID: {t.vmid || t.source_vm_id}
                                 {t.os_type && ` - ${t.os_type}`}
-                                {t.source === 'saved' && ' (salvato)'}
+                                {t.source === 'saved' && ' (saved)'}
                               </p>
                             </div>
                             {form.template_vm_id === (t.vmid || t.source_vm_id) && (
@@ -214,7 +214,7 @@ export function CreateVm() {
           {step === 1 && (
             <div className="space-y-4">
               <Input
-                id="name" label="Nome VM"
+                id="name" label="VM Name"
                 value={form.name}
                 onChange={(e) => {
                   update('name', e.target.value);
@@ -238,7 +238,7 @@ export function CreateVm() {
             <div className="space-y-4">
               {/* Network Mode Toggle */}
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2">Modalita Rete</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2">Network Mode</label>
                 <div className="flex gap-3">
                   <button
                     onClick={() => update('network_mode', 'dhcp')}
@@ -260,7 +260,7 @@ export function CreateVm() {
                     }`}
                   >
                     <Globe className="w-4 h-4" />
-                    IP Statico
+                    Static IP
                   </button>
                 </div>
               </div>
@@ -268,18 +268,18 @@ export function CreateVm() {
               {isDhcp ? (
                 <div className="bg-surface-900/50 border border-surface-700 rounded-lg px-5 py-4">
                   <p className="text-sm text-surface-400">
-                    La VM otterr&agrave; automaticamente un indirizzo IP dal server DHCP della rete.
+                    The VM will automatically obtain an IP address from the network DHCP server.
                   </p>
                 </div>
               ) : (
                 <>
-                  <Input id="ip" label="Indirizzo IP" value={form.ip} onChange={(e) => update('ip', e.target.value)} placeholder="192.168.1.100" />
+                  <Input id="ip" label="IP Address" value={form.ip} onChange={(e) => update('ip', e.target.value)} placeholder="192.168.1.100" />
                   <Input id="netmask" label="Netmask" value={form.netmask} onChange={(e) => update('netmask', e.target.value)} placeholder="255.255.255.0" />
                   <Input id="gateway" label="Gateway" value={form.gateway} onChange={(e) => update('gateway', e.target.value)} placeholder="192.168.1.1" />
                 </>
               )}
 
-              <Input id="dns" label="DNS (separati da virgola, opzionale con DHCP)" value={form.dns} onChange={(e) => update('dns', e.target.value)} placeholder="8.8.8.8,1.1.1.1" />
+              <Input id="dns" label="DNS (comma-separated, optional with DHCP)" value={form.dns} onChange={(e) => update('dns', e.target.value)} placeholder="8.8.8.8,1.1.1.1" />
             </div>
           )}
 
@@ -303,7 +303,7 @@ export function CreateVm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2">Disco: {form.disk_gb} GB</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2">Disk: {form.disk_gb} GB</label>
                 <input
                   type="range" min={5} max={500} step={5} value={form.disk_gb}
                   onChange={(e) => update('disk_gb', Number(e.target.value))}
@@ -316,16 +316,16 @@ export function CreateVm() {
                   onChange={(e) => update('auto_update', e.target.checked)}
                   className="accent-primary-500"
                 />
-                <label htmlFor="auto_update" className="text-sm text-surface-300">Auto-update al primo avvio</label>
+                <label htmlFor="auto_update" className="text-sm text-surface-300">Auto-update on first boot</label>
               </div>
               <Input
-                id="packages" label="Pacchetti extra (separati da virgola)"
+                id="packages" label="Extra packages (comma-separated)"
                 value={form.packages}
                 onChange={(e) => update('packages', e.target.value)}
                 placeholder="nginx,curl,htop"
               />
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2.5">SSH Keys (una per riga)</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2.5">SSH Keys (one per line)</label>
                 <textarea
                   className="w-full px-4 py-2.5 bg-surface-900 border border-surface-600 rounded-lg text-sm text-surface-200 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 h-24 resize-none"
                   value={form.ssh_keys}
@@ -339,18 +339,18 @@ export function CreateVm() {
           {/* Step 4: Summary */}
           {step === 4 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-surface-100 mb-3">Riepilogo</h3>
+              <h3 className="font-semibold text-surface-100 mb-3">Summary</h3>
               <SummaryRow label="Template" value={`${form.template_name} (${form.template_vm_id})`} />
-              <SummaryRow label="Nome VM" value={form.name} />
+              <SummaryRow label="VM Name" value={form.name} />
               <SummaryRow label="Hostname" value={form.hostname} />
-              <SummaryRow label="Rete" value={isDhcp ? 'DHCP (automatico)' : `${form.ip}/${form.netmask}`} />
+              <SummaryRow label="Network" value={isDhcp ? 'DHCP (automatic)' : `${form.ip}/${form.netmask}`} />
               {!isDhcp && <SummaryRow label="Gateway" value={form.gateway} />}
               {form.dns && <SummaryRow label="DNS" value={form.dns} />}
               <SummaryRow label="CPU" value={`${form.cores} cores`} />
               <SummaryRow label="RAM" value={`${form.memory_mb} MB`} />
-              <SummaryRow label="Disco" value={`${form.disk_gb} GB`} />
-              <SummaryRow label="Auto-update" value={form.auto_update ? 'Si' : 'No'} />
-              {form.packages && <SummaryRow label="Pacchetti" value={form.packages} />}
+              <SummaryRow label="Disk" value={`${form.disk_gb} GB`} />
+              <SummaryRow label="Auto-update" value={form.auto_update ? 'Yes' : 'No'} />
+              {form.packages && <SummaryRow label="Packages" value={form.packages} />}
             </div>
           )}
         </CardContent>
@@ -359,15 +359,15 @@ export function CreateVm() {
       {/* Navigation */}
       <div className="flex justify-between">
         <Button variant="secondary" onClick={() => setStep(step - 1)} disabled={step === 0}>
-          <ChevronLeft className="w-4 h-4" /> Indietro
+          <ChevronLeft className="w-4 h-4" /> Back
         </Button>
         {step < steps.length - 1 ? (
           <Button onClick={() => setStep(step + 1)} disabled={!canAdvance}>
-            Avanti <ChevronRight className="w-4 h-4" />
+            Next <ChevronRight className="w-4 h-4" />
           </Button>
         ) : (
           <Button onClick={handleCreate} disabled={creating}>
-            <Rocket className="w-4 h-4" /> {creating ? 'Creazione...' : 'Crea VM'}
+            <Rocket className="w-4 h-4" /> {creating ? 'Creating...' : 'Create VM'}
           </Button>
         )}
       </div>

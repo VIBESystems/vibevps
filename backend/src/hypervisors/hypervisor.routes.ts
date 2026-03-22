@@ -81,7 +81,7 @@ export async function hypervisorRoutes(app: FastifyInstance) {
 
     db.prepare(`UPDATE hypervisors SET ${fields.join(', ')} WHERE id = ?`).run(...values);
     clearAdapterCache(Number(id));
-    return { message: 'Aggiornato' };
+    return { message: 'Updated' };
   });
 
   // Delete
@@ -90,7 +90,7 @@ export async function hypervisorRoutes(app: FastifyInstance) {
     const db = getDb();
     db.prepare('DELETE FROM hypervisors WHERE id = ?').run(id);
     clearAdapterCache(Number(id));
-    return { message: 'Eliminato' };
+    return { message: 'Deleted' };
   });
 
   // Test connection
@@ -98,7 +98,7 @@ export async function hypervisorRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const db = getDb();
     const hv = db.prepare('SELECT * FROM hypervisors WHERE id = ?').get(id) as any;
-    if (!hv) return reply.status(404).send({ error: 'Hypervisor non trovato' });
+    if (!hv) return reply.status(404).send({ error: 'Hypervisor not found' });
 
     try {
       clearAdapterCache(Number(id));
@@ -108,7 +108,7 @@ export async function hypervisorRoutes(app: FastifyInstance) {
         const status = await adapter.getNodeStatus();
         return { connected: true, node: hv.node, hostname: status.hostname, version: status.version };
       }
-      return { connected: false, error: 'Connessione fallita' };
+      return { connected: false, error: 'Connection failed' };
     } catch (e: any) {
       return { connected: false, error: e.message };
     }
@@ -119,7 +119,7 @@ export async function hypervisorRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const db = getDb();
     const hv = db.prepare('SELECT * FROM hypervisors WHERE id = ?').get(id) as any;
-    if (!hv) return reply.status(404).send({ error: 'Hypervisor non trovato' });
+    if (!hv) return reply.status(404).send({ error: 'Hypervisor not found' });
 
     const adapter = getAdapter(hv);
     const storages = await adapter.listStorages();
@@ -131,7 +131,7 @@ export async function hypervisorRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const db = getDb();
     const hv = db.prepare('SELECT * FROM hypervisors WHERE id = ?').get(id) as any;
-    if (!hv) return reply.status(404).send({ error: 'Hypervisor non trovato' });
+    if (!hv) return reply.status(404).send({ error: 'Hypervisor not found' });
 
     const adapter = getAdapter(hv);
     const status = await adapter.getNodeStatus();

@@ -45,10 +45,10 @@ export function VmList() {
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-xl lg:text-2xl font-bold text-surface-100">Virtual Machines</h2>
-          <p className="text-sm text-surface-500">{realVMs.length} VM totali</p>
+          <p className="text-sm text-surface-500">{realVMs.length} total VMs</p>
         </div>
         <Link to="/create">
-          <Button><PlusCircle className="w-4 h-4" /> <span className="hidden sm:inline">Crea VM</span></Button>
+          <Button><PlusCircle className="w-4 h-4" /> <span className="hidden sm:inline">Create VM</span></Button>
         </Link>
       </div>
 
@@ -63,7 +63,7 @@ export function VmList() {
                 : 'bg-surface-800 text-surface-400 border border-surface-700 hover:bg-surface-700'
             }`}
           >
-            Tutti
+            All
           </button>
           {hypervisors.map((hv) => (
             <button
@@ -88,7 +88,7 @@ export function VmList() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
           <input
             className="w-full pl-10 pr-4 py-2.5 bg-surface-900 border border-surface-700 rounded-lg text-sm text-surface-200 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-            placeholder="Cerca..."
+            placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -103,18 +103,18 @@ export function VmList() {
                 : 'bg-surface-800 text-surface-400 border border-surface-700 hover:bg-surface-700'
             }`}
           >
-            {s === 'all' ? 'Tutte' : s}
+            {s === 'all' ? 'All' : s}
           </button>
         ))}
       </div>
 
       {/* VM Content */}
       {loading ? (
-        <div className="p-12 text-center text-surface-500">Caricamento...</div>
+        <div className="p-12 text-center text-surface-500">Loading...</div>
       ) : filtered.length === 0 ? (
         <Card>
           <div className="p-12 text-center text-surface-500">
-            {realVMs.length === 0 ? 'Nessuna VM trovata. Configura un hypervisor.' : 'Nessun risultato.'}
+            {realVMs.length === 0 ? 'No VMs found. Configure a hypervisor.' : 'No results.'}
           </div>
         </Card>
       ) : (
@@ -149,7 +149,7 @@ export function VmList() {
                         onClick={() => handleAction(vm.hypervisorId, vm.vmid, 'start')}
                         disabled={actionLoading === `${vm.vmid}-start`}
                       >
-                        <Play className="w-3.5 h-3.5 text-green-400" /> Avvia
+                        <Play className="w-3.5 h-3.5 text-green-400" /> Start
                       </Button>
                     )}
                     {vm.status === 'running' && (
@@ -159,19 +159,19 @@ export function VmList() {
                           onClick={() => handleAction(vm.hypervisorId, vm.vmid, 'restart')}
                           disabled={actionLoading === `${vm.vmid}-restart`}
                         >
-                          <RotateCw className="w-3.5 h-3.5 text-amber-400" /> Riavvia
+                          <RotateCw className="w-3.5 h-3.5 text-amber-400" /> Restart
                         </Button>
                         <Button
                           variant="ghost" size="sm"
                           onClick={() => handleAction(vm.hypervisorId, vm.vmid, 'stop')}
                           disabled={actionLoading === `${vm.vmid}-stop`}
                         >
-                          <Square className="w-3.5 h-3.5 text-red-400" /> Ferma
+                          <Square className="w-3.5 h-3.5 text-red-400" /> Stop
                         </Button>
                       </>
                     )}
                     <Link to={`/vms/${vm.hypervisorId}/${vm.vmid}`} className="ml-auto text-xs text-primary-400 hover:text-primary-300">
-                      Dettagli
+                      Details
                     </Link>
                   </div>
                 </div>
@@ -186,12 +186,12 @@ export function VmList() {
                 <thead>
                   <tr className="border-b border-surface-700 text-left text-xs text-surface-500 uppercase">
                     <th className="px-7 py-4">VM</th>
-                    <th className="px-7 py-4">Stato</th>
+                    <th className="px-7 py-4">Status</th>
                     <th className="px-7 py-4">CPU</th>
                     <th className="px-7 py-4">RAM</th>
                     <th className="px-7 py-4">Uptime</th>
                     <th className="px-7 py-4">Hypervisor</th>
-                    <th className="px-7 py-4 text-right">Azioni</th>
+                    <th className="px-7 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-700">

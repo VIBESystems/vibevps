@@ -70,10 +70,10 @@ export function Hypervisors() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-surface-100">Hypervisors</h2>
-          <p className="text-sm text-surface-500">Gestisci le connessioni agli hypervisor</p>
+          <p className="text-sm text-surface-500">Manage hypervisor connections</p>
         </div>
         <Button onClick={() => { resetForm(); setShowAdd(true); }}>
-          <Plus className="w-4 h-4" /> Aggiungi
+          <Plus className="w-4 h-4" /> Add
         </Button>
       </div>
 
@@ -81,10 +81,10 @@ export function Hypervisors() {
         <Card>
           <CardContent className="py-12 text-center">
             <Server className="w-12 h-12 text-surface-600 mx-auto mb-4" />
-            <p className="text-surface-400">Nessun hypervisor configurato</p>
-            <p className="text-sm text-surface-500 mt-1">Aggiungi il tuo primo hypervisor per iniziare</p>
+            <p className="text-surface-400">No hypervisors configured</p>
+            <p className="text-sm text-surface-500 mt-1">Add your first hypervisor to get started</p>
             <Button className="mt-4" onClick={() => setShowAdd(true)}>
-              <Plus className="w-4 h-4" /> Aggiungi Hypervisor
+              <Plus className="w-4 h-4" /> Add Hypervisor
             </Button>
           </CardContent>
         </Card>
@@ -127,34 +127,34 @@ export function Hypervisors() {
       <Modal
         open={showAdd}
         onClose={() => { setShowAdd(false); resetForm(); }}
-        title={editId ? 'Modifica Hypervisor' : 'Aggiungi Hypervisor'}
+        title={editId ? 'Edit Hypervisor' : 'Add Hypervisor'}
         className="max-w-md"
       >
         <div className="space-y-4">
-          <Input id="hv-name" label="Nome" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Proxmox Main" />
+          <Input id="hv-name" label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Proxmox Main" />
           <div>
-            <label className="block text-sm font-medium text-surface-300 mb-2">Tipo</label>
+            <label className="block text-sm font-medium text-surface-300 mb-2">Type</label>
             <select
               className="w-full px-4 py-2.5 bg-surface-900 border border-surface-600 rounded-lg text-sm text-surface-200"
               value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
             >
               <option value="proxmox">Proxmox VE</option>
-              <option value="vmware" disabled>VMware ESXi (prossimamente)</option>
+              <option value="vmware" disabled>VMware ESXi (coming soon)</option>
             </select>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <Input id="hv-host" label="Host" value={form.host} onChange={(e) => setForm({ ...form, host: e.target.value })} placeholder="192.168.1.10" />
             </div>
-            <Input id="hv-port" label="Porta" type="number" value={String(form.port)} onChange={(e) => setForm({ ...form, port: Number(e.target.value) })} />
+            <Input id="hv-port" label="Port" type="number" value={String(form.port)} onChange={(e) => setForm({ ...form, port: Number(e.target.value) })} />
           </div>
-          <Input id="hv-node" label="Nome Nodo" value={form.node} onChange={(e) => setForm({ ...form, node: e.target.value })} placeholder="pve" />
+          <Input id="hv-node" label="Node Name" value={form.node} onChange={(e) => setForm({ ...form, node: e.target.value })} placeholder="pve" />
           <Input id="hv-token-id" label="API Token ID" value={form.api_token_id} onChange={(e) => setForm({ ...form, api_token_id: e.target.value })} placeholder="user@pam!tokenname" />
           <Input id="hv-token-secret" label="API Token Secret" type="password" value={form.api_token_secret} onChange={(e) => setForm({ ...form, api_token_secret: e.target.value })} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="secondary" onClick={() => { setShowAdd(false); resetForm(); }}>Annulla</Button>
+            <Button variant="secondary" onClick={() => { setShowAdd(false); resetForm(); }}>Cancel</Button>
             <Button onClick={handleSave} disabled={!form.name || !form.host || !form.api_token_id}>
-              {editId ? 'Salva' : 'Aggiungi'}
+              {editId ? 'Save' : 'Add'}
             </Button>
           </div>
         </div>
@@ -164,15 +164,15 @@ export function Hypervisors() {
       <Modal
         open={deleteId !== null}
         onClose={() => setDeleteId(null)}
-        title="Elimina Hypervisor"
+        title="Delete Hypervisor"
       >
         <p className="text-sm text-surface-300 mb-4">
-          Sei sicuro di voler eliminare l'hypervisor <strong className="text-surface-100">{hypervisors.find(h => h.id === deleteId)?.name}</strong>? Tutte le VM associate non saranno piu' gestibili da VIBEVps.
+          Are you sure you want to delete the hypervisor <strong className="text-surface-100">{hypervisors.find(h => h.id === deleteId)?.name}</strong>? All associated VMs will no longer be manageable from VIBEVps.
         </p>
         <div className="flex gap-3 justify-end">
-          <Button variant="secondary" onClick={() => setDeleteId(null)}>Annulla</Button>
+          <Button variant="secondary" onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button variant="danger" onClick={handleDelete} disabled={deleteLoading}>
-            {deleteLoading ? 'Eliminazione...' : 'Elimina'}
+            {deleteLoading ? 'Deleting...' : 'Delete'}
           </Button>
         </div>
       </Modal>

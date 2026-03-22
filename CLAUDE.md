@@ -70,7 +70,7 @@ All prefixed with `/api`:
 - **Node name** must match actual Proxmox node (e.g. `dev`, not default `pve`) — auto-detected via test endpoint
 - Backend serves the frontend build from `frontend/dist/` in production with SPA fallback
 - Input validation uses Zod schemas on route handlers
-- UI text is in Italian (e.g. "Caricamento...", "Non autorizzato")
+- **UI language is English** — all UI text, error messages, labels, and API responses MUST be in English. This is a mandatory rule: every new feature, fix, or update MUST use English only. No Italian or other languages in the codebase.
 
 ## Update System
 
@@ -139,10 +139,11 @@ installer/updates/
 
 ## Version History
 
-Current application version: **1.3.0**
+Current application version: **1.3.1**
 
 | Version | Type | Date | Description |
 |---------|------|------|-------------|
+| **1.3.1** | PATCH | 22 Mar 2026 | English Translation: all UI text and API messages translated from Italian to English across frontend (15 files) and backend (9 files) |
 | **1.3.0** | MINOR | 22 Mar 2026 | Responsive Design: layout completamente responsive per mobile e tablet con sidebar hamburger menu, card list VM su mobile, modal bottom-sheet, griglie e padding adattivi |
 | **1.2.5** | PATCH | 22 Mar 2026 | Fix SSH: inizializzazione terminale xterm.js tramite callback ref per rendering affidabile |
 | **1.2.4** | PATCH | 21 Mar 2026 | Auto-installazione qemu-guest-agent via cloud-init vendor-data su nuove VM |

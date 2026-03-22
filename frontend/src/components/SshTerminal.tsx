@@ -106,11 +106,11 @@ export function SshTerminal({ hypervisorId, vmId, onClose }: SshTerminalProps) {
         if (msg.status === 'connected') {
           setPhase('connected');
         } else if (msg.status === 'error') {
-          setError(msg.message || 'Errore di connessione');
+          setError(msg.message || 'Connection error');
           setPhase('error');
           ws.close();
         } else if (msg.status === 'disconnected') {
-          terminalRef.current?.writeln('\r\n\x1b[31mConnessione chiusa.\x1b[0m');
+          terminalRef.current?.writeln('\r\n\x1b[31mConnection closed.\x1b[0m');
         }
       } else if (msg.type === 'data') {
         if (terminalRef.current) {
@@ -122,7 +122,7 @@ export function SshTerminal({ hypervisorId, vmId, onClose }: SshTerminalProps) {
     };
 
     ws.onerror = () => {
-      setError('Errore di connessione WebSocket');
+      setError('WebSocket connection error');
       setPhase('error');
     };
 
@@ -178,9 +178,9 @@ export function SshTerminal({ hypervisorId, vmId, onClose }: SshTerminalProps) {
           />
         </div>
         <div className="flex gap-3 justify-end">
-          <Button variant="secondary" onClick={onClose}>Annulla</Button>
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <Button onClick={connect} disabled={!username || !password}>
-            Connetti
+            Connect
           </Button>
         </div>
       </div>
@@ -191,7 +191,7 @@ export function SshTerminal({ hypervisorId, vmId, onClose }: SshTerminalProps) {
     return (
       <div className="flex items-center justify-center py-12 gap-3 text-surface-400">
         <Loader2 className="w-5 h-5 animate-spin" />
-        <span>Connessione SSH in corso...</span>
+        <span>Connecting via SSH...</span>
       </div>
     );
   }

@@ -25,7 +25,7 @@ export async function settingsRoutes(app: FastifyInstance) {
     const { key } = request.params as { key: string };
     const db = getDb();
     const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key) as { value: string } | undefined;
-    if (!row) return reply.status(404).send({ error: 'Impostazione non trovata' });
+    if (!row) return reply.status(404).send({ error: 'Setting not found' });
     try {
       return { key, value: JSON.parse(row.value) };
     } catch {
@@ -41,6 +41,6 @@ export async function settingsRoutes(app: FastifyInstance) {
     const serialized = typeof value === 'string' ? value : JSON.stringify(value);
     db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?')
       .run(key, serialized, serialized);
-    return { message: 'Salvato' };
+    return { message: 'Saved' };
   });
 }

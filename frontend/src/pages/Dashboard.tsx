@@ -169,7 +169,7 @@ export function Dashboard() {
     : visibleStorages;
 
   const stats = [
-    { label: 'VM Totali', value: filteredVMs.length, icon: Monitor, color: 'text-primary-400' },
+    { label: 'Total VMs', value: filteredVMs.length, icon: Monitor, color: 'text-primary-400' },
     { label: 'Running', value: running, icon: Play, color: 'text-green-400' },
     { label: 'Stopped', value: stopped, icon: Square, color: 'text-red-400' },
     { label: 'Hypervisors', value: selectedHv ? 1 : hypervisors.length, icon: Server, color: 'text-blue-400' },
@@ -179,7 +179,7 @@ export function Dashboard() {
     <div className="space-y-4 lg:space-y-6">
       <div>
         <h2 className="text-xl lg:text-2xl font-bold text-surface-100">Dashboard</h2>
-        <p className="text-sm text-surface-500">Panoramica delle risorse</p>
+        <p className="text-sm text-surface-500">Resource overview</p>
       </div>
 
       {/* Hypervisor Filter */}
@@ -193,7 +193,7 @@ export function Dashboard() {
                 : 'bg-surface-800 text-surface-400 border border-surface-700 hover:bg-surface-700'
             }`}
           >
-            Tutti
+            All
           </button>
           {hypervisors.map((hv) => (
             <button
@@ -253,7 +253,7 @@ export function Dashboard() {
                         onClick={() => refreshHypervisor(hv.id)}
                         disabled={refreshingHv === hv.id}
                         className="p-1.5 rounded-md hover:bg-surface-700 transition-colors text-surface-400 hover:text-surface-200 disabled:opacity-50"
-                        title="Aggiorna"
+                        title="Refresh"
                       >
                         <RefreshCw className={`w-4 h-4 ${refreshingHv === hv.id ? 'animate-spin' : ''}`} />
                       </button>
@@ -262,7 +262,7 @@ export function Dashboard() {
                   <CardContent className="space-y-4">
                     <ResourceBar icon={Cpu} label="CPU" value={ns.cpu} format={formatPercent} />
                     <ResourceBar icon={MemoryStick} label="RAM" value={ns.memoryUsed / ns.memoryTotal} extra={`${formatBytes(ns.memoryUsed)} / ${formatBytes(ns.memoryTotal)}`} />
-                    <ResourceBar icon={HardDrive} label="Disco" value={ns.diskUsed / ns.diskTotal} extra={`${formatBytes(ns.diskUsed)} / ${formatBytes(ns.diskTotal)}`} />
+                    <ResourceBar icon={HardDrive} label="Disk" value={ns.diskUsed / ns.diskTotal} extra={`${formatBytes(ns.diskUsed)} / ${formatBytes(ns.diskTotal)}`} />
                     <div className="text-xs text-surface-500">Uptime: {formatUptime(ns.uptime)}</div>
                   </CardContent>
                 </Card>
@@ -273,14 +273,14 @@ export function Dashboard() {
                     <div className="flex items-center gap-3">
                       <Network className="w-5 h-5 text-blue-400" />
                       <div>
-                        <h3 className="font-semibold text-surface-100">Traffico di Rete</h3>
-                        <p className="text-xs text-surface-500">{hv.name} &middot; aggregato VM</p>
+                        <h3 className="font-semibold text-surface-100">Network Traffic</h3>
+                        <p className="text-xs text-surface-500">{hv.name} &middot; VM aggregate</p>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-5">
                     {!net ? (
-                      <p className="text-sm text-surface-500">In attesa dei dati...</p>
+                      <p className="text-sm text-surface-500">Waiting for data...</p>
                     ) : (
                       <>
                         {/* IN */}
@@ -322,7 +322,7 @@ export function Dashboard() {
                         {/* Summary */}
                         <div className="pt-2 border-t border-surface-700">
                           <div className="flex justify-between text-xs text-surface-400">
-                            <span>Combinato</span>
+                            <span>Combined</span>
                             <span className="font-mono">{formatRate(net.inRate + net.outRate)}</span>
                           </div>
                         </div>
@@ -341,7 +341,7 @@ export function Dashboard() {
         <>
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-surface-100">Storage</h3>
-            <Link to="/settings" className="text-xs text-primary-400 hover:text-primary-300">Configura</Link>
+            <Link to="/settings" className="text-xs text-primary-400 hover:text-primary-300">Configure</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
             {filteredStorages.map(({ hypervisorId, hypervisorName, storage }) => {
@@ -367,8 +367,8 @@ export function Dashboard() {
                         <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${Math.min(pct, 100)}%` }} />
                       </div>
                       <div className="flex justify-between text-xs text-surface-500">
-                        <span>{formatBytes(storage.used)} usati</span>
-                        <span>{formatBytes(storage.total)} totali</span>
+                        <span>{formatBytes(storage.used)} used</span>
+                        <span>{formatBytes(storage.total)} total</span>
                       </div>
                     </div>
                   </CardContent>
@@ -385,15 +385,15 @@ export function Dashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-surface-100">Virtual Machines</h3>
-              <Link to="/vms" className="text-xs text-primary-400 hover:text-primary-300">Vedi tutte</Link>
+              <Link to="/vms" className="text-xs text-primary-400 hover:text-primary-300">View all</Link>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             {loading ? (
-              <div className="p-8 text-center text-surface-500">Caricamento...</div>
+              <div className="p-8 text-center text-surface-500">Loading...</div>
             ) : filteredVMs.length === 0 ? (
               <div className="p-8 text-center text-surface-500">
-                Nessuna VM trovata. Aggiungi un hypervisor per iniziare.
+                No VMs found. Add a hypervisor to get started.
               </div>
             ) : (
               <div className="divide-y divide-surface-700">
@@ -422,13 +422,13 @@ export function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-surface-100">Attivita Recente</h3>
-              <Link to="/logs" className="text-xs text-primary-400 hover:text-primary-300">Vedi tutto</Link>
+              <h3 className="font-semibold text-surface-100">Recent Activity</h3>
+              <Link to="/logs" className="text-xs text-primary-400 hover:text-primary-300">View all</Link>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             {logs.length === 0 ? (
-              <div className="p-8 text-center text-surface-500">Nessuna attivita</div>
+              <div className="p-8 text-center text-surface-500">No activity</div>
             ) : (
               <div className="divide-y divide-surface-700">
                 {logs.map((log) => (
@@ -444,7 +444,7 @@ export function Dashboard() {
                       </span>
                     </div>
                     <p className="text-xs text-surface-500 mt-1">
-                      {new Date(log.created_at).toLocaleString('it-IT')}
+                      {new Date(log.created_at).toLocaleString('en-US')}
                     </p>
                   </div>
                 ))}

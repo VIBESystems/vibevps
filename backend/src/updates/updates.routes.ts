@@ -17,7 +17,7 @@ export async function updatesRoutes(app: FastifyInstance) {
     try {
       await request.jwtVerify();
     } catch {
-      return reply.status(401).send({ error: 'Non autorizzato' });
+      return reply.status(401).send({ error: 'Unauthorized' });
     }
   });
 

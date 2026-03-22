@@ -402,12 +402,12 @@ export class ProxmoxAdapter implements HypervisorAdapter {
         if (taskStatus.exitstatus === 'OK') {
           return;
         }
-        throw new Error(`Task fallito: ${taskStatus.exitstatus}`);
+        throw new Error(`Task failed: ${taskStatus.exitstatus}`);
       }
       // Task still running, wait and retry
       await new Promise(r => setTimeout(r, 3000));
     }
-    throw new Error('Timeout: il clone impiega troppo tempo');
+    throw new Error('Timeout: clone is taking too long');
   }
 
   private mapVM(data: any): VM {

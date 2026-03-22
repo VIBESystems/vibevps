@@ -21,7 +21,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(body.username) as any;
     if (!user || !bcrypt.compareSync(body.password, user.password_hash)) {
-      return reply.status(401).send({ error: 'Credenziali non valide' });
+      return reply.status(401).send({ error: 'Invalid credentials' });
     }
 
     const token = app.jwt.sign({ id: user.id, username: user.username, role: user.role });
@@ -35,12 +35,12 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
     if (!user || !bcrypt.compareSync(body.currentPassword, user.password_hash)) {
-      return reply.status(400).send({ error: 'Password attuale non corretta' });
+      return reply.status(400).send({ error: 'Current password is incorrect' });
     }
 
     const hash = bcrypt.hashSync(body.newPassword, 10);
     db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, userId);
-    return { message: 'Password aggiornata' };
+    return { message: 'Password updated' };
   });
 
   app.get('/api/auth/me', { preHandler: authGuard }, async (request) => {

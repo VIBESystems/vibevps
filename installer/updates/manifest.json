@@ -1,7 +1,15 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.0",
+  "current_version": "1.3.1",
   "versions": [
+    {
+      "version": "1.3.1",
+      "release_date": "2026-03-22",
+      "download_url": "/api/updates/download/VIBEVps/1.3.1/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "English Translation: all UI text and API messages translated from Italian to English across frontend (15 files) and backend (9 files)",
+      "file_size": 194814
+    },
     {
       "version": "1.3.0",
       "release_date": "2026-03-22",

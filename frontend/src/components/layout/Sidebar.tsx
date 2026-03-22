@@ -17,12 +17,12 @@ import { cn } from '../../lib/utils';
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/vms', icon: Monitor, label: 'Virtual Machines' },
-  { to: '/create', icon: PlusCircle, label: 'Crea VM' },
+  { to: '/create', icon: PlusCircle, label: 'Create VM' },
   { to: '/templates', icon: FileBox, label: 'Templates' },
   { to: '/hypervisors', icon: Server, label: 'Hypervisors' },
-  { to: '/logs', icon: Activity, label: 'Log Attivita' },
-  { to: '/settings', icon: Settings, label: 'Impostazioni' },
-  { to: '/updates', icon: Download, label: 'Aggiornamenti' },
+  { to: '/logs', icon: Activity, label: 'Activity Log' },
+  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/updates', icon: Download, label: 'Updates' },
 ];
 
 interface SidebarProps {

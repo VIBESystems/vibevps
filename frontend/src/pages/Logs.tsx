@@ -22,15 +22,15 @@ export function Logs() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-surface-100">Log Attivita</h2>
-        <p className="text-sm text-surface-500">Storico operazioni VM</p>
+        <h2 className="text-2xl font-bold text-surface-100">Activity Log</h2>
+        <p className="text-sm text-surface-500">VM operations history</p>
       </div>
 
       <Card>
         {logs.length === 0 ? (
           <div className="p-12 text-center text-surface-500">
             <Activity className="w-12 h-12 mx-auto mb-4 text-surface-600" />
-            <p>Nessuna attivita registrata</p>
+            <p>No activity recorded</p>
           </div>
         ) : (
           <div className="divide-y divide-surface-700">
@@ -50,7 +50,7 @@ export function Logs() {
                     {log.status}
                   </span>
                   <span className="text-xs text-surface-500">
-                    {new Date(log.created_at).toLocaleString('it-IT')}
+                    {new Date(log.created_at).toLocaleString('en-US')}
                   </span>
                 </div>
               </div>

@@ -11,7 +11,7 @@ export async function sshHandler(app: FastifyInstance) {
     const vmId = query.vmId;
 
     if (!hypervisorId || !vmId) {
-      socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'Parametri mancanti' }));
+      socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'Missing parameters' }));
       socket.close();
       return;
     }
@@ -64,7 +64,7 @@ async function connectSSH(
   const db = getDb();
   const hv = db.prepare('SELECT * FROM hypervisors WHERE id = ?').get(hypervisorId) as any;
   if (!hv) {
-    socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'Hypervisor non trovato' }));
+    socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'Hypervisor not found' }));
     socket.close();
     return;
   }
@@ -99,7 +99,7 @@ async function connectSSH(
   }
 
   if (!vmIp) {
-    socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'IP della VM non disponibile. Assicurati che il QEMU Guest Agent sia attivo.' }));
+    socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'VM IP not available. Make sure the QEMU Guest Agent is active.' }));
     socket.close();
     return;
   }
@@ -111,7 +111,7 @@ async function connectSSH(
 
     conn.shell({ term: 'xterm-256color' }, (err, stream) => {
       if (err) {
-        socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'Impossibile aprire la shell' }));
+        socket.send(JSON.stringify({ type: 'status', status: 'error', message: 'Unable to open shell' }));
         socket.close();
         return;
       }
@@ -135,8 +135,8 @@ async function connectSSH(
 
   conn.on('error', (err) => {
     const message = err.message.includes('Authentication')
-      ? 'Autenticazione fallita. Verifica username e password.'
-      : `Errore connessione SSH: ${err.message}`;
+      ? 'Authentication failed. Check username and password.'
+      : `SSH connection error: ${err.message}`;
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: 'status', status: 'error', message }));
       socket.close();

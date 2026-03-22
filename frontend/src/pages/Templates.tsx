@@ -69,9 +69,9 @@ export function Templates() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-surface-100">Templates</h2>
-          <p className="text-sm text-surface-500">Template VM per la creazione rapida</p>
+          <p className="text-sm text-surface-500">VM templates for quick creation</p>
         </div>
-        <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4" /> Aggiungi</Button>
+        <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4" /> Add</Button>
       </div>
 
       {/* Hypervisor Filter */}
@@ -85,7 +85,7 @@ export function Templates() {
                 : 'bg-surface-800 text-surface-400 border border-surface-700 hover:bg-surface-700'
             }`}
           >
-            Tutti gli Hypervisor
+            All Hypervisors
           </button>
           {hypervisors.map((hv) => (
             <button
@@ -108,8 +108,8 @@ export function Templates() {
         <Card>
           <CardContent className="py-12 text-center">
             <FileBox className="w-12 h-12 text-surface-600 mx-auto mb-4" />
-            <p className="text-surface-400">Nessun template salvato</p>
-            <p className="text-sm text-surface-500 mt-1">Scopri e salva template dai tuoi hypervisor</p>
+            <p className="text-surface-400">No saved templates</p>
+            <p className="text-sm text-surface-500 mt-1">Discover and save templates from your hypervisors</p>
           </CardContent>
         </Card>
       ) : (
@@ -146,16 +146,16 @@ export function Templates() {
       )}
 
       {/* Add Modal */}
-      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Aggiungi Template" className="max-w-md">
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Template" className="max-w-md">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-surface-300 mb-2">Scopri da Hypervisor</label>
+            <label className="block text-sm font-medium text-surface-300 mb-2">Discover from Hypervisor</label>
             <div className="flex gap-2">
               <select
                 className="flex-1 px-4 py-2.5 bg-surface-900 border border-surface-600 rounded-lg text-sm text-surface-200"
                 value={selectedHv} onChange={(e) => setSelectedHv(Number(e.target.value))}
               >
-                <option value={0}>Seleziona...</option>
+                <option value={0}>Select...</option>
                 {hypervisors.map((hv) => <option key={hv.id} value={hv.id}>{hv.name}</option>)}
               </select>
               <Button variant="secondary" size="sm" onClick={() => discoverFromHv(selectedHv)} disabled={!selectedHv}>
@@ -182,19 +182,19 @@ export function Templates() {
             </div>
           )}
 
-          <Input id="t-name" label="Nome" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <Input id="t-desc" label="Descrizione" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <Input id="t-name" label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <Input id="t-desc" label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           <Input id="t-vmid" label="Source VM ID" value={form.source_vm_id} onChange={(e) => setForm({ ...form, source_vm_id: e.target.value })} />
           <div className="grid grid-cols-3 gap-3">
             <Input id="t-cores" label="Cores" type="number" value={String(form.default_cores)} onChange={(e) => setForm({ ...form, default_cores: Number(e.target.value) })} />
             <Input id="t-ram" label="RAM (MB)" type="number" value={String(form.default_memory_mb)} onChange={(e) => setForm({ ...form, default_memory_mb: Number(e.target.value) })} />
-            <Input id="t-disk" label="Disco (GB)" type="number" value={String(form.default_disk_gb)} onChange={(e) => setForm({ ...form, default_disk_gb: Number(e.target.value) })} />
+            <Input id="t-disk" label="Disk (GB)" type="number" value={String(form.default_disk_gb)} onChange={(e) => setForm({ ...form, default_disk_gb: Number(e.target.value) })} />
           </div>
-          <Input id="t-os" label="Tipo OS" value={form.os_type} onChange={(e) => setForm({ ...form, os_type: e.target.value })} placeholder="ubuntu, debian..." />
+          <Input id="t-os" label="OS Type" value={form.os_type} onChange={(e) => setForm({ ...form, os_type: e.target.value })} placeholder="ubuntu, debian..." />
 
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="secondary" onClick={() => setShowAdd(false)}>Annulla</Button>
-            <Button onClick={handleSave} disabled={!form.name || !form.source_vm_id}>Salva</Button>
+            <Button variant="secondary" onClick={() => setShowAdd(false)}>Cancel</Button>
+            <Button onClick={handleSave} disabled={!form.name || !form.source_vm_id}>Save</Button>
           </div>
         </div>
       </Modal>
@@ -203,15 +203,15 @@ export function Templates() {
       <Modal
         open={deleteId !== null}
         onClose={() => setDeleteId(null)}
-        title="Elimina Template"
+        title="Delete Template"
       >
         <p className="text-sm text-surface-300 mb-4">
-          Sei sicuro di voler eliminare il template <strong className="text-surface-100">{templates.find(t => t.id === deleteId)?.name}</strong>?
+          Are you sure you want to delete the template <strong className="text-surface-100">{templates.find(t => t.id === deleteId)?.name}</strong>?
         </p>
         <div className="flex gap-3 justify-end">
-          <Button variant="secondary" onClick={() => setDeleteId(null)}>Annulla</Button>
+          <Button variant="secondary" onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button variant="danger" onClick={handleDelete} disabled={deleteLoading}>
-            {deleteLoading ? 'Eliminazione...' : 'Elimina'}
+            {deleteLoading ? 'Deleting...' : 'Delete'}
           </Button>
         </div>
       </Modal>

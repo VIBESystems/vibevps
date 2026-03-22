@@ -89,10 +89,10 @@ export function Settings() {
 
     try {
       await api.saveSetting('dashboard_storages', updated);
-      setStorageMessage('Salvato');
+      setStorageMessage('Saved');
       setTimeout(() => setStorageMessage(''), 2000);
     } catch {
-      setStorageMessage('Errore nel salvataggio');
+      setStorageMessage('Error saving');
     }
     setStorageSaving(false);
   }
@@ -102,17 +102,17 @@ export function Settings() {
     setMessage('');
 
     if (newPassword !== confirmPassword) {
-      setError('Le password non coincidono');
+      setError('Passwords do not match');
       return;
     }
     if (newPassword.length < 6) {
-      setError('La password deve essere di almeno 6 caratteri');
+      setError('Password must be at least 6 characters');
       return;
     }
 
     try {
       await api.changePassword(currentPassword, newPassword);
-      setMessage('Password aggiornata con successo');
+      setMessage('Password updated successfully');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -124,8 +124,8 @@ export function Settings() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h2 className="text-2xl font-bold text-surface-100">Impostazioni</h2>
-        <p className="text-sm text-surface-500">Gestisci il tuo account e la dashboard</p>
+        <h2 className="text-2xl font-bold text-surface-100">Settings</h2>
+        <p className="text-sm text-surface-500">Manage your account and dashboard</p>
       </div>
 
       {/* User Info */}
@@ -133,7 +133,7 @@ export function Settings() {
         <CardHeader>
           <div className="flex items-center gap-3">
             <User className="w-5 h-5 text-primary-400" />
-            <h3 className="font-semibold text-surface-100">Profilo</h3>
+            <h3 className="font-semibold text-surface-100">Profile</h3>
           </div>
         </CardHeader>
         <CardContent>
@@ -157,10 +157,10 @@ export function Settings() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <HardDrive className="w-5 h-5 text-primary-400" />
-              <h3 className="font-semibold text-surface-100">Storage in Dashboard</h3>
+              <h3 className="font-semibold text-surface-100">Dashboard Storage</h3>
             </div>
             {storageMessage && (
-              <span className={`text-xs ${storageMessage === 'Salvato' ? 'text-green-400' : 'text-red-400'}`}>
+              <span className={`text-xs ${storageMessage === 'Saved' ? 'text-green-400' : 'text-red-400'}`}>
                 {storageMessage}
               </span>
             )}
@@ -168,13 +168,13 @@ export function Settings() {
         </CardHeader>
         <CardContent>
           {storageLoading ? (
-            <p className="text-sm text-surface-500">Caricamento storage...</p>
+            <p className="text-sm text-surface-500">Loading storage...</p>
           ) : hypervisors.length === 0 ? (
-            <p className="text-sm text-surface-500">Nessun hypervisor configurato.</p>
+            <p className="text-sm text-surface-500">No hypervisors configured.</p>
           ) : (
             <div className="space-y-5">
               <p className="text-sm text-surface-500">
-                Scegli quali storage visualizzare nella dashboard. I dati si aggiornano in tempo reale.
+                Choose which storages to display on the dashboard. Data updates in real time.
               </p>
               {hypervisors.map((hv) => {
                 const storages = storagesByHv[hv.id] || [];
@@ -186,7 +186,7 @@ export function Settings() {
                       <span className="text-xs text-surface-500">{hv.host}</span>
                     </div>
                     {storages.length === 0 ? (
-                      <p className="text-xs text-surface-500 ml-6">Nessuno storage trovato</p>
+                      <p className="text-xs text-surface-500 ml-6">No storage found</p>
                     ) : (
                       <div className="space-y-2 ml-6">
                         {storages.map((storage) => {
@@ -237,7 +237,7 @@ export function Settings() {
         <CardHeader>
           <div className="flex items-center gap-3">
             <Lock className="w-5 h-5 text-primary-400" />
-            <h3 className="font-semibold text-surface-100">Cambia Password</h3>
+            <h3 className="font-semibold text-surface-100">Change Password</h3>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -252,19 +252,19 @@ export function Settings() {
             </div>
           )}
           <Input
-            id="current" label="Password Attuale" type="password"
+            id="current" label="Current Password" type="password"
             value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
           />
           <Input
-            id="new" label="Nuova Password" type="password"
+            id="new" label="New Password" type="password"
             value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
           />
           <Input
-            id="confirm" label="Conferma Password" type="password"
+            id="confirm" label="Confirm Password" type="password"
             value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <Button onClick={handleChangePassword} disabled={!currentPassword || !newPassword}>
-            Aggiorna Password
+            Update Password
           </Button>
         </CardContent>
       </Card>

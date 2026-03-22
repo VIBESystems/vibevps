@@ -30,7 +30,7 @@ export function getAdapter(hypervisor: {
       });
       break;
     default:
-      throw new Error(`Tipo hypervisor non supportato: ${hypervisor.type}`);
+      throw new Error(`Unsupported hypervisor type: ${hypervisor.type}`);
   }
 
   adapters.set(hypervisor.id, adapter);

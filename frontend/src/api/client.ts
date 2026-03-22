@@ -38,12 +38,12 @@ class ApiClient {
     if (res.status === 401) {
       this.setToken(null);
       window.location.href = '/login';
-      throw new Error('Non autorizzato');
+      throw new Error('Unauthorized');
     }
 
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error || 'Errore API');
+      throw new Error(data.error || 'API Error');
     }
     return data;
   }

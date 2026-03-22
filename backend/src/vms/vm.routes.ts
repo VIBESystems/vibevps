@@ -32,7 +32,7 @@ const createVmSchema = z.object({
 function getHypervisor(id: number) {
   const db = getDb();
   const hv = db.prepare('SELECT * FROM hypervisors WHERE id = ?').get(id) as any;
-  if (!hv) throw new Error('Hypervisor non trovato');
+  if (!hv) throw new Error('Hypervisor not found');
   return hv;
 }
 
@@ -122,11 +122,11 @@ export async function vmRoutes(app: FastifyInstance) {
     if (body.template_id && !templateVmId) {
       const db = getDb();
       const tmpl = db.prepare('SELECT source_vm_id FROM vm_templates WHERE id = ?').get(body.template_id) as any;
-      if (!tmpl) return reply.status(404).send({ error: 'Template non trovato' });
+      if (!tmpl) return reply.status(404).send({ error: 'Template not found' });
       templateVmId = tmpl.source_vm_id;
     }
     if (!templateVmId) {
-      return reply.status(400).send({ error: 'Specificare template_id o template_vm_id' });
+      return reply.status(400).send({ error: 'Specify template_id or template_vm_id' });
     }
 
     try {
@@ -159,7 +159,7 @@ export async function vmRoutes(app: FastifyInstance) {
         hostname: body.hostname,
       });
 
-      return { vmId: newVmId, message: 'VM creata con successo' };
+      return { vmId: newVmId, message: 'VM created successfully' };
     } catch (e: any) {
       logAction(body.hypervisor_id, '0', body.name, 'create', { error: e.message }, 'error');
       return reply.status(500).send({ error: e.message });

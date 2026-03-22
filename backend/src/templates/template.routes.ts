@@ -34,7 +34,7 @@ export async function templateRoutes(app: FastifyInstance) {
     const { hypervisorId } = request.params as { hypervisorId: string };
     const db = getDb();
     const hv = db.prepare('SELECT * FROM hypervisors WHERE id = ?').get(hypervisorId) as any;
-    if (!hv) return reply.status(404).send({ error: 'Hypervisor non trovato' });
+    if (!hv) return reply.status(404).send({ error: 'Hypervisor not found' });
 
     const adapter = getAdapter(hv);
     const vms = await adapter.listVMs();
@@ -56,6 +56,6 @@ export async function templateRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const db = getDb();
     db.prepare('DELETE FROM vm_templates WHERE id = ?').run(id);
-    return { message: 'Eliminato' };
+    return { message: 'Deleted' };
   });
 }

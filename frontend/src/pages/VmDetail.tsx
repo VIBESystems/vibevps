@@ -50,15 +50,15 @@ export function VmDetail() {
     setShowDelete(false);
   }
 
-  if (loading) return <div className="p-12 text-center text-surface-500">Caricamento...</div>;
-  if (!vm) return <div className="p-12 text-center text-surface-500">VM non trovata</div>;
+  if (loading) return <div className="p-12 text-center text-surface-500">Loading...</div>;
+  if (!vm) return <div className="p-12 text-center text-surface-500">VM not found</div>;
 
   const infoItems = [
     { icon: Cpu, label: 'CPU', value: `${vm.cpuCount} cores${vm.status === 'running' ? ` (${formatPercent(vm.cpu)})` : ''}` },
-    { icon: MemoryStick, label: 'RAM', value: `${formatBytes(vm.memoryTotal)}${vm.status === 'running' ? ` (${formatBytes(vm.memoryUsed)} usata)` : ''}` },
-    { icon: HardDrive, label: 'Disco', value: formatBytes(vm.diskTotal) },
+    { icon: MemoryStick, label: 'RAM', value: `${formatBytes(vm.memoryTotal)}${vm.status === 'running' ? ` (${formatBytes(vm.memoryUsed)} used)` : ''}` },
+    { icon: HardDrive, label: 'Disk', value: formatBytes(vm.diskTotal) },
     { icon: Clock, label: 'Uptime', value: vm.status === 'running' ? formatUptime(vm.uptime) : '-' },
-    { icon: Network, label: 'Rete In/Out', value: vm.status === 'running' ? `${formatBytes(vm.netin)} / ${formatBytes(vm.netout)}` : '-' },
+    { icon: Network, label: 'Net In/Out', value: vm.status === 'running' ? `${formatBytes(vm.netin)} / ${formatBytes(vm.netout)}` : '-' },
     { icon: Monitor, label: 'ID', value: vm.vmid },
   ];
 
@@ -83,7 +83,7 @@ export function VmDetail() {
         <div className="flex items-center gap-2 flex-wrap pl-8 sm:pl-0">
           {vm.status === 'stopped' && (
             <Button onClick={() => handleAction('start')} disabled={actionLoading} size="sm">
-              <Play className="w-4 h-4" /> Avvia
+              <Play className="w-4 h-4" /> Start
             </Button>
           )}
           {vm.status === 'running' && (
@@ -92,18 +92,18 @@ export function VmDetail() {
                 <Terminal className="w-4 h-4" /> SSH
               </Button>
               <Button variant="secondary" size="sm" onClick={() => handleAction('restart')} disabled={actionLoading}>
-                <RotateCw className="w-4 h-4" /> <span className="hidden sm:inline">Riavvia</span>
+                <RotateCw className="w-4 h-4" /> <span className="hidden sm:inline">Restart</span>
               </Button>
               <Button variant="secondary" size="sm" onClick={() => handleAction('suspend')} disabled={actionLoading}>
-                <Pause className="w-4 h-4" /> <span className="hidden sm:inline">Sospendi</span>
+                <Pause className="w-4 h-4" /> <span className="hidden sm:inline">Suspend</span>
               </Button>
               <Button variant="danger" size="sm" onClick={() => handleAction('stop')} disabled={actionLoading}>
-                <Square className="w-4 h-4" /> <span className="hidden sm:inline">Ferma</span>
+                <Square className="w-4 h-4" /> <span className="hidden sm:inline">Stop</span>
               </Button>
             </>
           )}
           <Button variant="danger" size="sm" onClick={() => setShowDelete(true)}>
-            <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">Elimina</span>
+            <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">Delete</span>
           </Button>
         </div>
       </div>
@@ -129,7 +129,7 @@ export function VmDetail() {
       {vm.config && (
         <Card>
           <CardHeader>
-            <h3 className="font-semibold text-surface-100">Configurazione</h3>
+            <h3 className="font-semibold text-surface-100">Configuration</h3>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4 text-sm">
@@ -157,14 +157,14 @@ export function VmDetail() {
       </Modal>
 
       {/* Delete Modal */}
-      <Modal open={showDelete} onClose={() => setShowDelete(false)} title="Elimina VM">
+      <Modal open={showDelete} onClose={() => setShowDelete(false)} title="Delete VM">
         <p className="text-sm text-surface-300 mb-4">
-          Sei sicuro di voler eliminare <strong className="text-surface-100">{vm.name}</strong>? Questa azione e' irreversibile.
+          Are you sure you want to delete <strong className="text-surface-100">{vm.name}</strong>? This action is irreversible.
         </p>
         <div className="flex gap-3 justify-end">
-          <Button variant="secondary" onClick={() => setShowDelete(false)}>Annulla</Button>
+          <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
           <Button variant="danger" onClick={handleDelete} disabled={actionLoading}>
-            {actionLoading ? 'Eliminazione...' : 'Elimina'}
+            {actionLoading ? 'Deleting...' : 'Delete'}
           </Button>
         </div>
       </Modal>

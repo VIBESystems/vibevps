@@ -645,6 +645,10 @@ L'intera webapp è completamente responsive, ottimizzata per mobile, tablet e de
 - **CreateVm**: step indicator compatto su mobile (solo icone, no label), scroll orizzontale
 - **SshTerminal**: altezza adattiva (`300px` mobile, `400px` tablet, `450px` desktop)
 
+### 12.3 Lingua dell'interfaccia (v1.3.1)
+
+A partire dalla versione 1.3.1, l'intera interfaccia utente e tutti i messaggi API sono in **inglese**. Non è presente un sistema i18n — le stringhe sono hardcoded nei componenti React e nelle route backend. La traduzione ha coinvolto 15 file frontend e 9 file backend (~230 stringhe totali). Anche i formati data sono stati aggiornati da `it-IT` a `en-US`.
+
 ---
 
 ## 13. Sicurezza

@@ -21,7 +21,7 @@ export function Login() {
       await login(username, password);
       navigate('/');
     } catch (err: any) {
-      setError(err.message || 'Errore di login');
+      setError(err.message || 'Login error');
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ export function Login() {
           />
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Accesso...' : 'Accedi'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </Button>
 
           <p className="text-xs text-surface-500 text-center">
