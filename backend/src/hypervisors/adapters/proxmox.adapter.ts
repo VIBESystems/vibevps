@@ -221,13 +221,10 @@ export class ProxmoxAdapter implements HypervisorAdapter {
     // 2. Wait for clone task to FINISH
     await this.waitForTaskComplete(upid);
 
-    // 3. Detect storage from existing disk and check if cloud-init drive exists
+    // 3. Detect storage, main disk, and cloud-init drive slot from cloned config
     const currentConfig = await this.request('GET', `/nodes/${this.node}/qemu/${newId}/config`);
-    const hasCloudInit = Object.entries(currentConfig).some(
-      ([_, v]) => String(v).includes('cloudinit')
-    );
 
-    // Find main disk and storage name (scsi0, virtio0, etc.)
+    // Find main disk storage
     let storage = 'local-lvm';
     let mainDisk = '';
     for (const [key, val] of Object.entries(currentConfig)) {
@@ -238,18 +235,25 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       }
     }
 
-    // 4. Add cloud-init drive if not present
-    if (!hasCloudInit) {
-      let ciSlot = 'ide0';
-      for (const slot of ['ide0', 'ide1', 'ide3']) {
-        if (!currentConfig[slot]) {
-          ciSlot = slot;
-          break;
-        }
+    // 4. Locate existing cloud-init drive (cloned from template) or pick a free slot
+    let ciSlot = '';
+    let ciStorage = storage;
+    for (const [key, val] of Object.entries(currentConfig)) {
+      if (/^(ide|scsi|virtio|sata)\d+$/.test(key) && String(val).includes('cloudinit')) {
+        ciSlot = key;
+        ciStorage = String(val).split(':')[0] || storage;
+        break;
       }
-      await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, {
-        [ciSlot]: `${storage}:cloudinit`,
-      });
+    }
+    if (!ciSlot) {
+      for (const slot of ['ide2', 'ide0', 'ide1', 'ide3']) {
+        if (!currentConfig[slot]) { ciSlot = slot; break; }
+      }
+      if (!ciSlot) ciSlot = 'ide2';
+    } else {
+      // Remove the cloned cloud-init drive — it contains stale IP/hostname baked in from the template.
+      // It will be re-created fresh in the vmConfig PUT below, so Proxmox generates it with the new settings.
+      await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, { delete: ciSlot });
     }
 
     // 5. Resize disk if requested (only grow, Proxmox can't shrink)
@@ -286,6 +290,8 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       memory: cfg.resources.memoryMb,
       agent: '1,fstrim_cloned_disks=1',
       net0: net0New,
+      // Re-add cloud-init drive fresh — Proxmox generates the image with the parameters below
+      [ciSlot]: `${ciStorage}:cloudinit`,
       ciuser: 'root',
       ciupgrade: cfg.postInstall?.autoUpdate ? 1 : 0,
       ipconfig0,
@@ -311,12 +317,6 @@ export class ProxmoxAdapter implements HypervisorAdapter {
     }
 
     await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, vmConfig);
-
-    // Force cloud-init drive regeneration so the new ipconfig0 is baked in
-    // (prevents VM from booting with stale IP inherited from the template)
-    try {
-      await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/cloudinit`);
-    } catch { /* not critical, Proxmox regenerates automatically on most versions */ }
 
     // 7. Start the VM
     await this.request('POST', `/nodes/${this.node}/qemu/${newId}/status/start`);

@@ -1,7 +1,15 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.8",
+  "current_version": "1.3.9",
   "versions": [
+    {
+      "version": "1.3.9",
+      "release_date": "2026-03-27",
+      "download_url": "/api/updates/download/VIBEVps/1.3.9/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix hostname and IP not applied: delete cloned cloud-init drive and recreate it fresh in the same API call as ipconfig0/hostname, so Proxmox generates the image with correct settings instead of stale template data",
+      "file_size": 196331
+    },
     {
       "version": "1.3.8",
       "release_date": "2026-03-27",
