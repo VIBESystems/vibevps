@@ -1,7 +1,15 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.7",
+  "current_version": "1.3.8",
   "versions": [
+    {
+      "version": "1.3.8",
+      "release_date": "2026-03-27",
+      "download_url": "/api/updates/download/VIBEVps/1.3.8/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix static IP assignment: force cloud-init drive regeneration after config to prevent VM from booting with stale IP from template; reset template selection when hypervisor changes",
+      "file_size": 196274
+    },
     {
       "version": "1.3.7",
       "release_date": "2026-03-27",

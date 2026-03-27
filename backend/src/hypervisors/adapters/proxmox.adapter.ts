@@ -312,6 +312,12 @@ export class ProxmoxAdapter implements HypervisorAdapter {
 
     await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, vmConfig);
 
+    // Force cloud-init drive regeneration so the new ipconfig0 is baked in
+    // (prevents VM from booting with stale IP inherited from the template)
+    try {
+      await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/cloudinit`);
+    } catch { /* not critical, Proxmox regenerates automatically on most versions */ }
+
     // 7. Start the VM
     await this.request('POST', `/nodes/${this.node}/qemu/${newId}/status/start`);
 

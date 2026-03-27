@@ -51,6 +51,9 @@ export function CreateVm() {
 
   useEffect(() => {
     if (form.hypervisor_id > 0) {
+      // Reset template selection when hypervisor changes to prevent stale vmid from a different hypervisor
+      setForm((prev) => ({ ...prev, template_vm_id: '', template_name: '' }));
+      setDiscoveredTemplates([]);
       api.discoverTemplates(form.hypervisor_id).then(setDiscoveredTemplates).catch(() => {});
     }
   }, [form.hypervisor_id]);
