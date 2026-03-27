@@ -137,10 +137,11 @@ installer/updates/
 
 ## Version History
 
-Current application version: **1.3.11**
+Current application version: **1.3.12**
 
 | Version | Type | Date | Description |
 |---------|------|------|-------------|
+| **1.3.12** | PATCH | 27 Mar 2026 | Disk resize non-fatal: qemu-img timeout on slow storage (qcow2/RAID) no longer blocks VM creation; logs warning and continues |
 | **1.3.11** | PATCH | 27 Mar 2026 | Fix persistent lock timeout: add 3s delay after clone task completes before acquiring VM lock; wait for resize task to complete before proceeding |
 | **1.3.10** | PATCH | 27 Mar 2026 | Fix lock timeout on disk resize: move resize operation before cloud-init config changes to avoid Proxmox lock conflict |
 | **1.3.9** | PATCH | 27 Mar 2026 | Fix hostname and IP not applied on new VMs: delete cloned cloud-init drive and recreate it fresh so Proxmox generates the image with the correct settings instead of using stale template data |

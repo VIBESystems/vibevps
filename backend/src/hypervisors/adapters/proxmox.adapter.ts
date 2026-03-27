@@ -243,12 +243,18 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       const currentSizeGb = sizeMatch ? Number(sizeMatch[1]) : 0;
 
       if (cfg.resources.diskGb > currentSizeGb) {
-        const resizeUpid = await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
-          disk: mainDisk,
-          size: `${cfg.resources.diskGb}G`,
-        });
-        if (typeof resizeUpid === 'string' && resizeUpid.startsWith('UPID:')) {
-          await this.waitForTaskComplete(resizeUpid);
+        try {
+          const resizeUpid = await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
+            disk: mainDisk,
+            size: `${cfg.resources.diskGb}G`,
+          });
+          if (typeof resizeUpid === 'string' && resizeUpid.startsWith('UPID:')) {
+            await this.waitForTaskComplete(resizeUpid);
+          }
+        } catch (err) {
+          // Resize can fail on slow storage (qcow2/RAID timeout) — non-fatal.
+          // VM is still created; disk can be resized manually from Proxmox.
+          console.warn(`[VM Clone] Disk resize failed (non-fatal): ${err instanceof Error ? err.message : err}`);
         }
       }
     }
