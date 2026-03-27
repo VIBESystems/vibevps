@@ -29,7 +29,7 @@ export async function templateRoutes(app: FastifyInstance) {
     `).all();
   });
 
-  // List templates from hypervisor (auto-discover)
+  // List templates from hypervisor (auto-discover) with real specs from config
   app.get('/api/templates/discover/:hypervisorId', async (request, reply) => {
     const { hypervisorId } = request.params as { hypervisorId: string };
     const db = getDb();
@@ -38,7 +38,43 @@ export async function templateRoutes(app: FastifyInstance) {
 
     const adapter = getAdapter(hv);
     const vms = await adapter.listVMs();
-    return vms.filter(vm => vm.template);
+    const templates = vms.filter(vm => vm.template);
+
+    // Fetch real specs from config for each template (cores, memory, disk)
+    const enriched = await Promise.all(
+      templates.map(async (tmpl) => {
+        try {
+          const detail = await adapter.getVM(tmpl.vmid);
+          const cfg = detail.config as Record<string, any>;
+
+          const cores = cfg.cores ? Number(cfg.cores) : (tmpl.cpuCount || 0);
+          const memoryMb = cfg.memory ? Number(cfg.memory) : 0;
+          const memoryTotal = memoryMb * 1024 * 1024;
+
+          // Parse disk size from first non-cloudinit disk (scsi0, virtio0, ide0…)
+          let diskTotal = tmpl.diskTotal || 0;
+          for (const [key, val] of Object.entries(cfg)) {
+            if (/^(scsi|virtio|ide|sata)\d+$/.test(key) && !String(val).includes('cloudinit') && !String(val).includes('cdrom')) {
+              const match = String(val).match(/size=(\d+(?:\.\d+)?)(G|M|T)/i);
+              if (match) {
+                const size = parseFloat(match[1]);
+                const unit = match[2].toUpperCase();
+                diskTotal = unit === 'T' ? size * 1024 * 1024 * 1024 * 1024
+                  : unit === 'M' ? size * 1024 * 1024
+                  : size * 1024 * 1024 * 1024;
+              }
+              break;
+            }
+          }
+
+          return { ...tmpl, cpuCount: cores, memoryTotal, diskTotal };
+        } catch {
+          return tmpl;
+        }
+      })
+    );
+
+    return enriched;
   });
 
   // Save template

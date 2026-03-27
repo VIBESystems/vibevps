@@ -62,9 +62,10 @@ export function CreateVm() {
   function selectTemplate(tmpl: any) {
     update('template_vm_id', tmpl.vmid || tmpl.source_vm_id);
     update('template_name', tmpl.name);
-    const cores = tmpl.default_cores || tmpl.cpuCount || 2;
-    const memMb = tmpl.default_memory_mb || (tmpl.memoryTotal ? Math.round(tmpl.memoryTotal / 1024 / 1024) : 2048);
-    const diskGb = tmpl.default_disk_gb || (tmpl.diskTotal ? Math.round(tmpl.diskTotal / 1024 / 1024 / 1024) : 20);
+    // Prefer real Proxmox values (cpuCount/memoryTotal/diskTotal) over stored defaults
+    const cores = (tmpl.cpuCount > 0 ? tmpl.cpuCount : null) ?? tmpl.default_cores ?? 2;
+    const memMb = (tmpl.memoryTotal > 0 ? Math.round(tmpl.memoryTotal / 1024 / 1024) : null) ?? tmpl.default_memory_mb ?? 2048;
+    const diskGb = (tmpl.diskTotal > 0 ? Math.round(tmpl.diskTotal / 1024 / 1024 / 1024) : null) ?? tmpl.default_disk_gb ?? 20;
     update('cores', cores);
     update('memory_mb', memMb);
     update('disk_gb', diskGb);
@@ -110,11 +111,18 @@ export function CreateVm() {
     setCreating(false);
   }
 
+  // Merge saved templates with discovered specs (prefer real Proxmox values)
+  // Discovered templates not yet saved appear at the bottom
   const allTemplates = [
     ...templates
       .filter((t) => t.hypervisor_id === form.hypervisor_id)
-      .map((t) => ({ ...t, source: 'saved', vmid: t.source_vm_id })),
-    ...discoveredTemplates.map((t) => ({ ...t, source: 'discovered' })),
+      .map((t) => {
+        const live = discoveredTemplates.find((d) => String(d.vmid) === String(t.source_vm_id));
+        return { ...t, source: 'saved', vmid: t.source_vm_id, ...(live ? { cpuCount: live.cpuCount, memoryTotal: live.memoryTotal, diskTotal: live.diskTotal } : {}) };
+      }),
+    ...discoveredTemplates
+      .filter((d) => !templates.some((t) => t.hypervisor_id === form.hypervisor_id && String(t.source_vm_id) === String(d.vmid)))
+      .map((t) => ({ ...t, source: 'discovered' })),
   ];
 
   // Validation for step navigation
