@@ -62,9 +62,12 @@ export function CreateVm() {
   function selectTemplate(tmpl: any) {
     update('template_vm_id', tmpl.vmid || tmpl.source_vm_id);
     update('template_name', tmpl.name);
-    if (tmpl.default_cores) update('cores', tmpl.default_cores);
-    if (tmpl.default_memory_mb) update('memory_mb', tmpl.default_memory_mb);
-    if (tmpl.default_disk_gb) update('disk_gb', tmpl.default_disk_gb);
+    const cores = tmpl.default_cores || tmpl.cpuCount || 2;
+    const memMb = tmpl.default_memory_mb || (tmpl.memoryTotal ? Math.round(tmpl.memoryTotal / 1024 / 1024) : 2048);
+    const diskGb = tmpl.default_disk_gb || (tmpl.diskTotal ? Math.round(tmpl.diskTotal / 1024 / 1024 / 1024) : 20);
+    update('cores', cores);
+    update('memory_mb', memMb);
+    update('disk_gb', diskGb);
   }
 
   const isDhcp = form.network_mode === 'dhcp';
@@ -197,6 +200,11 @@ export function CreateVm() {
                                 ID: {t.vmid || t.source_vm_id}
                                 {t.os_type && ` - ${t.os_type}`}
                                 {t.source === 'saved' && ' (saved)'}
+                              </p>
+                              <p className="text-xs text-surface-400 mt-1">
+                                {(t.default_cores || t.cpuCount) ? `${t.default_cores || t.cpuCount} cores` : null}
+                                {(t.default_memory_mb || t.memoryTotal) ? ` · ${t.default_memory_mb || (t.memoryTotal ? Math.round(t.memoryTotal / 1024 / 1024) : null)} MB RAM` : null}
+                                {(t.default_disk_gb || t.diskTotal) ? ` · ${t.default_disk_gb || (t.diskTotal ? Math.round(t.diskTotal / 1024 / 1024 / 1024) : null)} GB disk` : null}
                               </p>
                             </div>
                             {form.template_vm_id === (t.vmid || t.source_vm_id) && (

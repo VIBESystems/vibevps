@@ -137,10 +137,11 @@ installer/updates/
 
 ## Version History
 
-Current application version: **1.3.5**
+Current application version: **1.3.6**
 
 | Version | Type | Date | Description |
 |---------|------|------|-------------|
+| **1.3.6** | PATCH | 27 Mar 2026 | Templates: real CPU/RAM/disk specs read from Proxmox; auto-fill form on discover; specs shown in Create VM template cards |
 | **1.3.5** | PATCH | 26 Mar 2026 | Templates auto-refresh after adding new template; manual refresh button on Dashboard and VM List pages |
 | **1.3.4** | PATCH | 26 Mar 2026 | Fix sequential updates: download all update zips before launching script, fixes chain updates failing |
 | **1.3.3** | PATCH | 26 Mar 2026 | Create VM: templates filtered by selected hypervisor, showing only relevant templates |

@@ -43,6 +43,9 @@ export function Templates() {
       hypervisor_id: selectedHv,
       source_vm_id: tmpl.vmid,
       name: tmpl.name,
+      default_cores: tmpl.cpuCount || 2,
+      default_memory_mb: tmpl.memoryTotal ? Math.round(tmpl.memoryTotal / 1024 / 1024) : 2048,
+      default_disk_gb: tmpl.diskTotal ? Math.round(tmpl.diskTotal / 1024 / 1024 / 1024) : 20,
     });
   }
 
@@ -178,7 +181,10 @@ export function Templates() {
                       : 'border-surface-700 hover:border-surface-500 text-surface-300'
                   }`}
                 >
-                  {d.name} (ID: {d.vmid})
+                  <div className="font-medium">{d.name} <span className="font-normal text-surface-500">(ID: {d.vmid})</span></div>
+                  <div className="text-xs text-surface-500 mt-0.5">
+                    {d.cpuCount || '?'} cores · {d.memoryTotal ? Math.round(d.memoryTotal / 1024 / 1024) : '?'} MB RAM · {d.diskTotal ? Math.round(d.diskTotal / 1024 / 1024 / 1024) : '?'} GB disk
+                  </div>
                 </button>
               ))}
             </div>

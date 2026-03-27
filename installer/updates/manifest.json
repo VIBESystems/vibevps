@@ -1,7 +1,15 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.5",
+  "current_version": "1.3.6",
   "versions": [
+    {
+      "version": "1.3.6",
+      "release_date": "2026-03-27",
+      "download_url": "/api/updates/download/VIBEVps/1.3.6/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Templates: read real CPU cores, RAM and disk specs from Proxmox; auto-fill form when discovering a template; show specs in template cards on Create VM page",
+      "file_size": 195346
+    },
     {
       "version": "1.3.5",
       "release_date": "2026-03-26",
