@@ -50,7 +50,9 @@ export function Templates() {
     await api.addTemplate(form);
     setShowAdd(false);
     setForm({ hypervisor_id: 0, source_vm_id: '', name: '', description: '', default_cores: 2, default_memory_mb: 2048, default_disk_gb: 20, os_type: '' });
-    load();
+    setDiscovered([]);
+    setSelectedHv(0);
+    await load();
   }
 
   const filteredTemplates = hvFilter ? templates.filter((t) => t.hypervisor_id === hvFilter) : templates;

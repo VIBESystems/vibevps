@@ -101,37 +101,32 @@ export async function updatesRoutes(app: FastifyInstance) {
     console.log(`[Update] Pending updates: ${pendingUpdates.length}`);
     console.log(formatUpdatePath(pendingUpdates));
 
-    // Build chain with per-version download tokens
-    const chain = pendingUpdates.map(u => ({
-      version: u.version,
-      downloadUrl: downloadTokens[u.version]
-        ? `${LICENSE_SERVER_URL}/api/updates/download/${downloadTokens[u.version]}`
-        : null,
-    }));
+    // Download ALL update zips before launching the script
+    const chain: Array<{ version: string; filePath: string }> = [];
 
-    // Download first update zip
-    const firstStep = chain[0];
-    if (!firstStep.downloadUrl) {
-      return reply.status(500).send({ error: `No download token for version ${firstStep.version}` });
+    for (const update of pendingUpdates) {
+      const token = downloadTokens[update.version];
+      if (!token) {
+        return reply.status(500).send({ error: `No download token for version ${update.version}` });
+      }
+
+      const downloadUrl = `${LICENSE_SERVER_URL}/api/updates/download/${token}`;
+      const downloadResponse = await fetch(downloadUrl);
+      if (!downloadResponse.ok) {
+        return reply.status(500).send({ error: `Download failed for version ${update.version}` });
+      }
+
+      const buffer = await downloadResponse.arrayBuffer();
+      const filePath = `/tmp/vibevps-update-${update.version}.zip`;
+      await writeFile(filePath, Buffer.from(buffer));
+      chain.push({ version: update.version, filePath });
     }
 
-    const downloadResponse = await fetch(firstStep.downloadUrl);
-    if (!downloadResponse.ok) {
-      return reply.status(500).send({ error: 'Download failed' });
-    }
+    const updateFilePath = chain[0].filePath;
 
-    const buffer = await downloadResponse.arrayBuffer();
-    const updateFilePath = '/tmp/vibevps-update.zip';
-    await writeFile(updateFilePath, Buffer.from(buffer));
-
-    // Save chain for sequential updates (if multi-step)
-    if (chain.length > 1) {
-      const updateChain = {
-        chain: chain.slice(1), // remaining steps after the first
-        currentStep: 0,
-      };
-      await writeFile('/tmp/update-chain.json', JSON.stringify(updateChain, null, 2));
-    }
+    // Save chain file for update.sh (all steps including the first)
+    const updateChain = { chain, currentStep: 0 };
+    await writeFile('/tmp/update-chain.json', JSON.stringify(updateChain, null, 2));
 
     // Launch update script in background
     const scriptPath = join(INSTALL_DIR, 'scripts', 'update.sh');

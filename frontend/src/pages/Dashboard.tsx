@@ -177,9 +177,19 @@ export function Dashboard() {
 
   return (
     <div className="space-y-4 lg:space-y-6">
-      <div>
-        <h2 className="text-xl lg:text-2xl font-bold text-surface-100">Dashboard</h2>
-        <p className="text-sm text-surface-500">Resource overview</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl lg:text-2xl font-bold text-surface-100">Dashboard</h2>
+          <p className="text-sm text-surface-500">Resource overview</p>
+        </div>
+        <button
+          onClick={() => { fetchVMs(); loadHypervisors(); loadLogs(); }}
+          disabled={loading}
+          className="p-2 rounded-lg bg-surface-800 border border-surface-700 text-surface-400 hover:bg-surface-700 hover:text-surface-200 transition-colors disabled:opacity-50"
+          title="Refresh"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+        </button>
       </div>
 
       {/* Hypervisor Filter */}

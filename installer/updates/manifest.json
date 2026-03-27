@@ -1,7 +1,39 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.1",
+  "current_version": "1.3.5",
   "versions": [
+    {
+      "version": "1.3.5",
+      "release_date": "2026-03-26",
+      "download_url": "/api/updates/download/VIBEVps/1.3.5/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Templates auto-refresh after adding new template; manual refresh button on Dashboard and VM List pages",
+      "file_size": 195028
+    },
+    {
+      "version": "1.3.4",
+      "release_date": "2026-03-26",
+      "download_url": "/api/updates/download/VIBEVps/1.3.4/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix sequential updates: download all update zips before launching update script, fixes chain updates failing when multiple versions need to be applied",
+      "file_size": 194829
+    },
+    {
+      "version": "1.3.3",
+      "release_date": "2026-03-26",
+      "download_url": "/api/updates/download/VIBEVps/1.3.3/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Create VM: templates are now filtered by the selected hypervisor, showing only relevant templates",
+      "file_size": 194837
+    },
+    {
+      "version": "1.3.2",
+      "release_date": "2026-03-26",
+      "download_url": "/api/updates/download/VIBEVps/1.3.2/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fixed sidebar: sidebar now stays fixed on the left side on desktop, only the content area scrolls",
+      "file_size": 194837
+    },
     {
       "version": "1.3.1",
       "release_date": "2026-03-22",

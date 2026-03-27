@@ -6,7 +6,7 @@ import { Button } from '../components/ui/Button';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { formatBytes, formatUptime, formatPercent } from '../lib/utils';
 import { api } from '../api/client';
-import { Monitor, Play, Square, RotateCw, Search, PlusCircle, Server } from 'lucide-react';
+import { Monitor, Play, Square, RotateCw, Search, PlusCircle, Server, RefreshCw } from 'lucide-react';
 
 export function VmList() {
   const { vms, loading, fetchVMs, vmAction } = useVMs();
@@ -47,9 +47,19 @@ export function VmList() {
           <h2 className="text-xl lg:text-2xl font-bold text-surface-100">Virtual Machines</h2>
           <p className="text-sm text-surface-500">{realVMs.length} total VMs</p>
         </div>
-        <Link to="/create">
-          <Button><PlusCircle className="w-4 h-4" /> <span className="hidden sm:inline">Create VM</span></Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => fetchVMs()}
+            disabled={loading}
+            className="p-2 rounded-lg bg-surface-800 border border-surface-700 text-surface-400 hover:bg-surface-700 hover:text-surface-200 transition-colors disabled:opacity-50"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <Link to="/create">
+            <Button><PlusCircle className="w-4 h-4" /> <span className="hidden sm:inline">Create VM</span></Button>
+          </Link>
+        </div>
       </div>
 
       {/* Hypervisor Filter */}

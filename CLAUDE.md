@@ -137,10 +137,14 @@ installer/updates/
 
 ## Version History
 
-Current application version: **1.3.1**
+Current application version: **1.3.5**
 
 | Version | Type | Date | Description |
 |---------|------|------|-------------|
+| **1.3.5** | PATCH | 26 Mar 2026 | Templates auto-refresh after adding new template; manual refresh button on Dashboard and VM List pages |
+| **1.3.4** | PATCH | 26 Mar 2026 | Fix sequential updates: download all update zips before launching script, fixes chain updates failing |
+| **1.3.3** | PATCH | 26 Mar 2026 | Create VM: templates filtered by selected hypervisor, showing only relevant templates |
+| **1.3.2** | PATCH | 26 Mar 2026 | Fixed sidebar: stays fixed on the left on desktop, only content area scrolls |
 | **1.3.1** | PATCH | 22 Mar 2026 | English Translation: all UI text and API messages translated from Italian to English across frontend (15 files) and backend (9 files) |
 | **1.3.0** | MINOR | 22 Mar 2026 | Responsive Design: layout completamente responsive per mobile e tablet con sidebar hamburger menu, card list VM su mobile, modal bottom-sheet, griglie e padding adattivi |
 | **1.2.5** | PATCH | 22 Mar 2026 | Fix SSH: inizializzazione terminale xterm.js tramite callback ref per rendering affidabile |

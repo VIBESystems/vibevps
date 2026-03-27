@@ -637,8 +637,8 @@ L'intera webapp è completamente responsive, ottimizzata per mobile, tablet e de
 
 **Componenti chiave:**
 
-- **Sidebar**: nascosta su mobile con hamburger menu nell'header, overlay scuro, slide-in animato. Su desktop (`lg:`) sempre visibile e statica
-- **Layout**: header mobile sticky con hamburger + logo. Padding `p-4` su mobile, `p-6` su desktop
+- **Sidebar**: nascosta su mobile con hamburger menu nell'header, overlay scuro, slide-in animato. Su desktop (`lg:`) fissa sul lato sinistro (`fixed`), solo il contenuto a destra scrolla. Il content wrapper usa `lg:ml-64` per compensare la larghezza sidebar
+- **Layout**: header mobile sticky con hamburger + logo. Padding `p-4` su mobile, `p-6` su desktop. Root container usa `h-screen overflow-hidden`, area contenuto usa `overflow-y-auto`
 - **Modal**: bottom-sheet su mobile (sale dal basso), centrato su desktop. Scroll interno per contenuti lunghi
 - **VmList**: tabella su desktop, card list su mobile con info compatte e azioni inline
 - **VmDetail**: pulsanti azioni wrappano su mobile, testo nascosto su schermi piccoli (solo icone)
@@ -648,6 +648,20 @@ L'intera webapp è completamente responsive, ottimizzata per mobile, tablet e de
 ### 12.3 Lingua dell'interfaccia (v1.3.1)
 
 A partire dalla versione 1.3.1, l'intera interfaccia utente e tutti i messaggi API sono in **inglese**. Non è presente un sistema i18n — le stringhe sono hardcoded nei componenti React e nelle route backend. La traduzione ha coinvolto 15 file frontend e 9 file backend (~230 stringhe totali). Anche i formati data sono stati aggiornati da `it-IT` a `en-US`.
+
+### 12.4 Sidebar fissa su desktop (v1.3.2)
+
+La sidebar rimane ora **fissa** (`fixed`) sul lato sinistro dello schermo anche su desktop. Solo l'area di contenuto a destra scrolla verticalmente. Precedentemente la sidebar usava `lg:static` e scorreva insieme al contenuto.
+
+**Modifiche:**
+- `Sidebar.tsx`: rimosso `lg:static`, la sidebar resta `fixed` a tutte le risoluzioni
+- `Layout.tsx`: aggiunto `lg:ml-64` al wrapper contenuto, `h-screen overflow-hidden` sul root, `overflow-y-auto` sul main
+
+### 12.5 Filtro template per hypervisor nel wizard Create VM (v1.3.3)
+
+Nel wizard di creazione VM (Step 1), i template salvati vengono ora filtrati in base all'hypervisor selezionato. Precedentemente tutti i template salvati venivano mostrati indipendentemente dall'hypervisor scelto.
+
+**Modifica:** in `CreateVm.tsx`, aggiunto `.filter((t) => t.hypervisor_id === form.hypervisor_id)` nella costruzione di `allTemplates` per i template salvati.
 
 ---
 
@@ -712,9 +726,11 @@ Il sistema di aggiornamento segue lo stesso modello di VIBERad, integrato con VI
 3. Click su "Installa" → `POST /api/updates/install`:
    - Riceve `downloadTokens` (oggetto con token per ogni versione), `targetVersion`, `changelog`
    - Calcola il path di aggiornamento (supporta salti multi-versione via `update-sequencer`)
-   - Scarica lo zip dal license server usando il token della versione corretta
-   - Salva la chain in `/tmp/update-chain.json` per aggiornamenti multi-step
+   - Scarica **tutti** i zip necessari dal license server (uno per ogni versione nel path), salvandoli come `/tmp/vibevps-update-{version}.zip`
+   - Salva la chain in `/tmp/update-chain.json` con i `filePath` locali di ogni step
    - Lancia `scripts/update.sh` in background (nohup)
+
+   > **Fix v1.3.4:** Precedentemente veniva scaricato solo il primo zip e nella chain venivano salvate le `downloadUrl` invece dei `filePath`, causando il fallimento degli aggiornamenti sequenziali multi-step. Ora tutti i file vengono scaricati prima di avviare lo script.
 4. `update.sh` esegue:
    - Lock file anti-duplicazione
    - Backup completo (sorgenti + DB + .env)
@@ -836,6 +852,13 @@ ENCRYPTION_KEY=<auto-generato>
 - [x] Rilevamento automatico IP via QEMU Guest Agent con fallback multipli
 - [x] Auto-installazione qemu-guest-agent via cloud-init vendor-data su nuove VM
 - [x] Supporto resize terminale e buffer dati pre-rendering
+
+### Fase 2.8 - UX Improvements — Completata (v1.3.2 → v1.3.5)
+- [x] Sidebar fissa su desktop, solo il contenuto scrolla (v1.3.2)
+- [x] Filtro template per hypervisor selezionato nella creazione VM (v1.3.3)
+- [x] Fix aggiornamenti sequenziali: download di tutti gli zip prima dell'esecuzione script (v1.3.4)
+- [x] Auto-refresh lista template dopo aggiunta di un nuovo template (v1.3.5)
+- [x] Bottone refresh manuale su Dashboard e VM List (v1.3.5)
 
 ### Fase 3 - Monitoraggio — Non implementata
 - [ ] Grafici CPU/RAM/Rete per VM (metriche Proxmox rrddata)

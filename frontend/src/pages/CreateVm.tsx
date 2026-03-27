@@ -108,7 +108,9 @@ export function CreateVm() {
   }
 
   const allTemplates = [
-    ...templates.map((t) => ({ ...t, source: 'saved', vmid: t.source_vm_id })),
+    ...templates
+      .filter((t) => t.hypervisor_id === form.hypervisor_id)
+      .map((t) => ({ ...t, source: 'saved', vmid: t.source_vm_id })),
     ...discoveredTemplates.map((t) => ({ ...t, source: 'discovered' })),
   ];
 
