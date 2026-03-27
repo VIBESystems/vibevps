@@ -137,10 +137,11 @@ installer/updates/
 
 ## Version History
 
-Current application version: **1.3.9**
+Current application version: **1.3.10**
 
 | Version | Type | Date | Description |
 |---------|------|------|-------------|
+| **1.3.10** | PATCH | 27 Mar 2026 | Fix lock timeout on disk resize: move resize operation before cloud-init config changes to avoid Proxmox lock conflict |
 | **1.3.9** | PATCH | 27 Mar 2026 | Fix hostname and IP not applied on new VMs: delete cloned cloud-init drive and recreate it fresh so Proxmox generates the image with the correct settings instead of using stale template data |
 | **1.3.8** | PATCH | 27 Mar 2026 | Fix static IP assignment: force cloud-init drive regeneration after config update; reset template selection when hypervisor changes to prevent stale vmid |
 | **1.3.7** | PATCH | 27 Mar 2026 | Fix template real specs: backend reads VM config from Proxmox for accurate cores/RAM/disk (maxdisk=0 for stopped VMs); frontend prefers live Proxmox values over stored defaults |

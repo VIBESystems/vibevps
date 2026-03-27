@@ -235,7 +235,20 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       }
     }
 
-    // 4. Locate existing cloud-init drive (cloned from template) or pick a free slot
+    // 4. Resize disk FIRST (before any config changes that hold the lock)
+    if (cfg.resources.diskGb && mainDisk) {
+      const sizeMatch = String(currentConfig[mainDisk]).match(/size=(\d+)G/);
+      const currentSizeGb = sizeMatch ? Number(sizeMatch[1]) : 0;
+
+      if (cfg.resources.diskGb > currentSizeGb) {
+        await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
+          disk: mainDisk,
+          size: `${cfg.resources.diskGb}G`,
+        });
+      }
+    }
+
+    // 5. Locate existing cloud-init drive (cloned from template) or pick a free slot
     let ciSlot = '';
     let ciStorage = storage;
     for (const [key, val] of Object.entries(currentConfig)) {
@@ -254,19 +267,6 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       // Remove the cloned cloud-init drive — it contains stale IP/hostname baked in from the template.
       // It will be re-created fresh in the vmConfig PUT below, so Proxmox generates it with the new settings.
       await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, { delete: ciSlot });
-    }
-
-    // 5. Resize disk if requested (only grow, Proxmox can't shrink)
-    if (cfg.resources.diskGb && mainDisk) {
-      const sizeMatch = String(currentConfig[mainDisk]).match(/size=(\d+)G/);
-      const currentSizeGb = sizeMatch ? Number(sizeMatch[1]) : 0;
-
-      if (cfg.resources.diskGb > currentSizeGb) {
-        await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
-          disk: mainDisk,
-          size: `${cfg.resources.diskGb}G`,
-        });
-      }
     }
 
     // 6. Generate unique MAC address and rebuild net0 to avoid DHCP conflicts

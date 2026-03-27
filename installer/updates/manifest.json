@@ -1,7 +1,15 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.9",
+  "current_version": "1.3.10",
   "versions": [
+    {
+      "version": "1.3.10",
+      "release_date": "2026-03-27",
+      "download_url": "/api/updates/download/VIBEVps/1.3.10/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix lock timeout on disk resize: move resize before cloud-init config changes to avoid Proxmox VM lock conflict",
+      "file_size": 196344
+    },
     {
       "version": "1.3.9",
       "release_date": "2026-03-27",
