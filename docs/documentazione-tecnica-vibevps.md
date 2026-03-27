@@ -860,6 +860,13 @@ ENCRYPTION_KEY=<auto-generato>
 - [x] Auto-refresh lista template dopo aggiunta di un nuovo template (v1.3.5)
 - [x] Bottone refresh manuale su Dashboard e VM List (v1.3.5)
 
+### Fase 2.9 - Template Real Specs — In corso (v1.3.6 → v1.3.7)
+- [x] Backend: il discover endpoint legge il config Proxmox (`/qemu/{vmid}/config`) per ogni template per ottenere cores, memory e disk reali (v1.3.6)
+- [x] Frontend: auto-fill form con valori reali al momento del discover; specs mostrate nelle card template (v1.3.6)
+- [x] Fix backend: lettura config Proxmox per `maxdisk=0` su VM ferme (v1.3.7)
+- [x] Frontend: preferisce valori live Proxmox sui default salvati nel DB; merge saved+discovered (v1.3.7)
+- [ ] **⚠️ NON FUNZIONA ANCORA** — Le specifiche reali non vengono mostrate correttamente nell'interfaccia. Il problema non è ancora stato individuato. Da investigare nella prossima sessione.
+
 ### Fase 3 - Monitoraggio — Non implementata
 - [ ] Grafici CPU/RAM/Rete per VM (metriche Proxmox rrddata)
 - [ ] Grafici risorse nodo hypervisor
