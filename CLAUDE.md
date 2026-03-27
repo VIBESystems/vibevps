@@ -137,15 +137,11 @@ installer/updates/
 
 ## Version History
 
-Current application version: **1.3.12**
+Current application version: **1.3.13**
 
 | Version | Type | Date | Description |
 |---------|------|------|-------------|
-| **1.3.12** | PATCH | 27 Mar 2026 | Disk resize non-fatal: qemu-img timeout on slow storage (qcow2/RAID) no longer blocks VM creation; logs warning and continues |
-| **1.3.11** | PATCH | 27 Mar 2026 | Fix persistent lock timeout: add 3s delay after clone task completes before acquiring VM lock; wait for resize task to complete before proceeding |
-| **1.3.10** | PATCH | 27 Mar 2026 | Fix lock timeout on disk resize: move resize operation before cloud-init config changes to avoid Proxmox lock conflict |
-| **1.3.9** | PATCH | 27 Mar 2026 | Fix hostname and IP not applied on new VMs: delete cloned cloud-init drive and recreate it fresh so Proxmox generates the image with the correct settings instead of using stale template data |
-| **1.3.8** | PATCH | 27 Mar 2026 | Fix static IP assignment: force cloud-init drive regeneration after config update; reset template selection when hypervisor changes to prevent stale vmid |
+| **1.3.13** | PATCH | 27 Mar 2026 | Robust VM creation: active lock polling (waitForVmUnlock), disk resize with 3 retries, fresh cloud-init drive, detailed logging. Supersedes 1.3.8–1.3.12 fixes |
 | **1.3.7** | PATCH | 27 Mar 2026 | Fix template real specs: backend reads VM config from Proxmox for accurate cores/RAM/disk (maxdisk=0 for stopped VMs); frontend prefers live Proxmox values over stored defaults |
 | **1.3.6** | PATCH | 27 Mar 2026 | Templates: real CPU/RAM/disk specs read from Proxmox; auto-fill form on discover; specs shown in Create VM template cards |
 | **1.3.5** | PATCH | 26 Mar 2026 | Templates auto-refresh after adding new template; manual refresh button on Dashboard and VM List pages |

@@ -210,23 +210,23 @@ export class ProxmoxAdapter implements HypervisorAdapter {
 
   async cloneFromTemplate(cfg: CreateVMConfig): Promise<string> {
     const newId = await this.getNextVmId();
+    console.log(`[VM Clone] Creating VM ${newId} from template ${cfg.templateVmId}`);
 
-    // 1. Clone the template - returns UPID (task ID)
+    // 1. Clone the template
     const upid = await this.request('POST', `/nodes/${this.node}/qemu/${cfg.templateVmId}/clone`, {
       newid: newId,
       name: cfg.name,
       full: 1,
     });
-
-    // 2. Wait for clone task to FINISH
     await this.waitForTaskComplete(upid);
-    // Brief pause: Proxmox marks the task as stopped slightly before releasing the VM lock
-    await new Promise(r => setTimeout(r, 3000));
+    console.log(`[VM Clone] Clone complete, VM ${newId} created`);
 
-    // 3. Detect storage, main disk, and cloud-init drive slot from cloned config
+    // 2. Wait for Proxmox to release the VM lock after clone
+    await this.waitForVmUnlock(newId);
+
+    // 3. Read cloned config to detect disk, storage, and cloud-init drive
     const currentConfig = await this.request('GET', `/nodes/${this.node}/qemu/${newId}/config`);
 
-    // Find main disk storage
     let storage = 'local-lvm';
     let mainDisk = '';
     for (const [key, val] of Object.entries(currentConfig)) {
@@ -237,29 +237,27 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       }
     }
 
-    // 4. Resize disk FIRST (before any config changes that hold the lock)
+    // 4. Resize disk with retry (slow storage like qcow2/RAID may need multiple attempts)
     if (cfg.resources.diskGb && mainDisk) {
       const sizeMatch = String(currentConfig[mainDisk]).match(/size=(\d+)G/);
       const currentSizeGb = sizeMatch ? Number(sizeMatch[1]) : 0;
 
       if (cfg.resources.diskGb > currentSizeGb) {
-        try {
-          const resizeUpid = await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
+        console.log(`[VM Clone] Resizing ${mainDisk}: ${currentSizeGb}G → ${cfg.resources.diskGb}G`);
+        await this.retryOperation(async () => {
+          await this.waitForVmUnlock(newId);
+          const resizeResult = await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
             disk: mainDisk,
             size: `${cfg.resources.diskGb}G`,
           });
-          if (typeof resizeUpid === 'string' && resizeUpid.startsWith('UPID:')) {
-            await this.waitForTaskComplete(resizeUpid);
+          if (typeof resizeResult === 'string' && resizeResult.startsWith('UPID:')) {
+            await this.waitForTaskComplete(resizeResult);
           }
-        } catch (err) {
-          // Resize can fail on slow storage (qcow2/RAID timeout) — non-fatal.
-          // VM is still created; disk can be resized manually from Proxmox.
-          console.warn(`[VM Clone] Disk resize failed (non-fatal): ${err instanceof Error ? err.message : err}`);
-        }
+        }, 3, 5000, `Disk resize ${mainDisk}`);
       }
     }
 
-    // 5. Locate existing cloud-init drive (cloned from template) or pick a free slot
+    // 5. Remove stale cloud-init drive (cloned from template with old IP/hostname baked in)
     let ciSlot = '';
     let ciStorage = storage;
     for (const [key, val] of Object.entries(currentConfig)) {
@@ -269,39 +267,38 @@ export class ProxmoxAdapter implements HypervisorAdapter {
         break;
       }
     }
-    if (!ciSlot) {
+    if (ciSlot) {
+      console.log(`[VM Clone] Removing stale cloud-init drive from ${ciSlot}`);
+      await this.waitForVmUnlock(newId);
+      await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, { delete: ciSlot });
+    } else {
       for (const slot of ['ide2', 'ide0', 'ide1', 'ide3']) {
         if (!currentConfig[slot]) { ciSlot = slot; break; }
       }
       if (!ciSlot) ciSlot = 'ide2';
-    } else {
-      // Remove the cloned cloud-init drive — it contains stale IP/hostname baked in from the template.
-      // It will be re-created fresh in the vmConfig PUT below, so Proxmox generates it with the new settings.
-      await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, { delete: ciSlot });
     }
 
-    // 6. Generate unique MAC address and rebuild net0 to avoid DHCP conflicts
+    // 6. Generate unique MAC address
     const net0Current = String(currentConfig.net0 || '');
     const newMac = this.generateMacAddress();
-    console.log(`[VM Clone] net0 from template: "${net0Current}"`);
-    console.log(`[VM Clone] new MAC generated: ${newMac}`);
-    // Preserve bridge and model from template, replace MAC
     const net0New = net0Current
       ? net0Current.replace(/[0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){5}/, newMac)
       : `virtio=${newMac},bridge=vmbr0`;
-    console.log(`[VM Clone] net0 new value: "${net0New}"`);
+    console.log(`[VM Clone] MAC: ${newMac} | net0: "${net0New}"`);
 
-    // 7. Set hostname, IP, resources, enable guest agent via cloud-init
+    // 7. Apply ALL settings + fresh cloud-init drive in a single PUT
+    //    Proxmox generates the cloud-init image from scratch with these parameters
     const ipconfig0 = cfg.network.mode === 'dhcp'
       ? 'ip=dhcp'
       : `ip=${cfg.network.ip}/${this.netmaskToCidr(cfg.network.netmask!)},gw=${cfg.network.gateway}`;
+
+    console.log(`[VM Clone] Setting config: hostname=${cfg.hostname}, ipconfig0=${ipconfig0}`);
 
     const vmConfig: Record<string, any> = {
       cores: cfg.resources.cores,
       memory: cfg.resources.memoryMb,
       agent: '1,fstrim_cloned_disks=1',
       net0: net0New,
-      // Re-add cloud-init drive fresh — Proxmox generates the image with the parameters below
       [ciSlot]: `${ciStorage}:cloudinit`,
       ciuser: 'root',
       ciupgrade: cfg.postInstall?.autoUpdate ? 1 : 0,
@@ -315,7 +312,7 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       vmConfig.sshkeys = encodeURIComponent(cfg.postInstall.sshKeys.join('\n'));
     }
 
-    // 8. Upload cloud-init vendor-data to auto-install qemu-guest-agent
+    // 8. Upload cloud-init vendor-data for auto-install of qemu-guest-agent
     try {
       const snippetStorage = await this.findSnippetStorage();
       if (snippetStorage) {
@@ -327,17 +324,18 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       console.log(`[VM Clone] Snippet upload skipped: ${err instanceof Error ? err.message : err}`);
     }
 
+    await this.waitForVmUnlock(newId);
     await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/config`, vmConfig);
+    console.log(`[VM Clone] Config applied successfully`);
 
-    // 7. Start the VM
+    // 9. Start the VM
+    await this.waitForVmUnlock(newId);
     await this.request('POST', `/nodes/${this.node}/qemu/${newId}/status/start`);
+    console.log(`[VM Clone] VM ${newId} started`);
 
-    // 8. After boot, regenerate machine-id (fixes DHCP DUID conflicts on clones)
-    //    and expand partition + filesystem via guest agent
+    // 10. Post-boot: regenerate machine-id + expand filesystem via guest agent (non-blocking)
     const diskDev = mainDisk ? (mainDisk.startsWith('scsi') ? '/dev/sda' : '/dev/vda') : '';
-    this.postBootSetup(newId, diskDev, !!cfg.resources.diskGb).catch(() => {
-      // Non-blocking
-    });
+    this.postBootSetup(newId, diskDev, !!cfg.resources.diskGb).catch(() => {});
 
     return String(newId);
   }
@@ -408,6 +406,35 @@ export class ProxmoxAdapter implements HypervisorAdapter {
           'input-data': diskScript + '\n',
         });
       } catch { /* non-blocking */ }
+    }
+  }
+
+  private async waitForVmUnlock(vmId: number, maxWait = 30000): Promise<void> {
+    const start = Date.now();
+    while (Date.now() - start < maxWait) {
+      try {
+        const config = await this.request('GET', `/nodes/${this.node}/qemu/${vmId}/config`);
+        if (!config.lock) return; // No lock held — safe to proceed
+      } catch { /* ignore */ }
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    // Final attempt — if still locked, subsequent operations will handle the error
+    console.warn(`[VM ${vmId}] Lock still held after ${maxWait / 1000}s, proceeding anyway`);
+  }
+
+  private async retryOperation(fn: () => Promise<void>, maxRetries: number, delay: number, label: string): Promise<void> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await fn();
+        return;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(`[${label}] Attempt ${attempt}/${maxRetries} failed: ${msg}`);
+        if (attempt === maxRetries) {
+          throw new Error(`${label} failed after ${maxRetries} attempts: ${msg}`);
+        }
+        await new Promise(r => setTimeout(r, delay * attempt));
+      }
     }
   }
 
