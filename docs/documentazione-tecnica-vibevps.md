@@ -865,7 +865,19 @@ ENCRYPTION_KEY=<auto-generato>
 - [x] Frontend: auto-fill form con valori reali al momento del discover; specs mostrate nelle card template (v1.3.6)
 - [x] Fix backend: lettura config Proxmox per `maxdisk=0` su VM ferme (v1.3.7)
 - [x] Frontend: preferisce valori live Proxmox sui default salvati nel DB; merge saved+discovered (v1.3.7)
-- [ ] **⚠️ NON FUNZIONA ANCORA** — Le specifiche reali non vengono mostrate correttamente nell'interfaccia. Il problema non è ancora stato individuato. Da investigare nella prossima sessione.
+- [ ] **⚠️ NON FUNZIONA ANCORA** — Le specifiche reali non vengono mostrate correttamente nell'interfaccia. Da investigare.
+
+### Fase 2.10 - Creazione VM robusta — Completata (v1.3.8 → v1.3.13)
+- [x] Reset selezione template al cambio hypervisor per evitare vmid stale (v1.3.8)
+- [x] Cloud-init: eliminazione drive clonato dal template e ricreazione fresco con IP/hostname corretti (v1.3.9)
+- [x] Riordino operazioni: resize disco prima delle modifiche config (v1.3.10)
+- [x] Attesa completamento task resize; pausa dopo clone per rilascio lock (v1.3.11)
+- [x] Resize disco non bloccante su storage lento (v1.3.12)
+- [x] **Riscrittura completa `cloneFromTemplate`** (v1.3.13):
+  - `waitForVmUnlock()`: polling attivo su `config.lock` prima di ogni operazione (sostituisce delay fissi)
+  - Resize disco con 3 retry e attese crescenti per storage qcow2/RAID lento
+  - Cloud-init drive: eliminato il clone stale, ricreato nella stessa PUT con hostname + ipconfig0
+  - Logging dettagliato step-by-step per debug
 
 ### Fase 3 - Monitoraggio — Non implementata
 - [ ] Grafici CPU/RAM/Rete per VM (metriche Proxmox rrddata)
