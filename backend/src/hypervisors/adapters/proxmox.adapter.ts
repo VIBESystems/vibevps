@@ -220,6 +220,8 @@ export class ProxmoxAdapter implements HypervisorAdapter {
 
     // 2. Wait for clone task to FINISH
     await this.waitForTaskComplete(upid);
+    // Brief pause: Proxmox marks the task as stopped slightly before releasing the VM lock
+    await new Promise(r => setTimeout(r, 3000));
 
     // 3. Detect storage, main disk, and cloud-init drive slot from cloned config
     const currentConfig = await this.request('GET', `/nodes/${this.node}/qemu/${newId}/config`);
@@ -241,10 +243,13 @@ export class ProxmoxAdapter implements HypervisorAdapter {
       const currentSizeGb = sizeMatch ? Number(sizeMatch[1]) : 0;
 
       if (cfg.resources.diskGb > currentSizeGb) {
-        await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
+        const resizeUpid = await this.request('PUT', `/nodes/${this.node}/qemu/${newId}/resize`, {
           disk: mainDisk,
           size: `${cfg.resources.diskGb}G`,
         });
+        if (typeof resizeUpid === 'string' && resizeUpid.startsWith('UPID:')) {
+          await this.waitForTaskComplete(resizeUpid);
+        }
       }
     }
 

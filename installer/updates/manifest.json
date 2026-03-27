@@ -1,7 +1,15 @@
 {
   "product_name": "VIBEVps",
-  "current_version": "1.3.10",
+  "current_version": "1.3.11",
   "versions": [
+    {
+      "version": "1.3.11",
+      "release_date": "2026-03-27",
+      "download_url": "/api/updates/download/VIBEVps/1.3.11/vibevps.zip",
+      "filename": "vibevps.zip",
+      "changelog": "Fix persistent lock timeout: add 3s pause after clone task before acquiring VM lock; await resize task completion before proceeding with config changes",
+      "file_size": 196432
+    },
     {
       "version": "1.3.10",
       "release_date": "2026-03-27",
